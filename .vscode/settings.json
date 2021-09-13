@@ -1,8 +1,0 @@
-{
-    "editor.suggestSelection": "first",
-    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "workbench.colorTheme": "Atom One Dark",
-    "files.autoSave": "onFocusChange",
-    "files.eol": "\r\n",
-    "editor.codeActionsOnSave": null
-}
