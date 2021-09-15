@@ -19,12 +19,10 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-<<<<<<< HEAD
-    "nest-puppeteer": "^1.1.1",
-    "puppeteer": "^10.2.0",
-=======
     "@nestjs/swagger": "^5.0.9",
->>>>>>> 23464fda5299c0aef49b51e1b7c5be7683725b03
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "puppeteer": "^10.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
