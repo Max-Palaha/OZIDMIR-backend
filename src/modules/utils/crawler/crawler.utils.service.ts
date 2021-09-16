@@ -6,10 +6,10 @@ import { Browser, Page, Viewport, WaitForOptions } from 'puppeteer';
 export class CrawlerServiceUtils {
   private readonly USER_AGENT = 'INSERT_USERAGENT';
   private readonly TIMEOUT = 20000;
-  private COUNT_OF_DEFAULT_PAGES = 1;
-  private headless = false;
-  private slowMo = 0;
-  private devTools = false;
+  private readonly COUNT_OF_DEFAULT_PAGES = 1;
+  private readonly headless = false;
+  private readonly slowMo = 0;
+  private readonly devTools = false;
   private browser: Browser;
   private pageOptions: WaitForOptions = {
     waitUntil: 'networkidle0',
@@ -23,7 +23,7 @@ export class CrawlerServiceUtils {
     isMobile: false,
   };
 
-  async crawl(url: string) {
+  async crawl(url: string): Promise<string> {
     if (!this.browser) {
       await this.startBrowser();
     }
@@ -31,6 +31,7 @@ export class CrawlerServiceUtils {
     const context = await currentPage.content();
     await currentPage.close();
     await this.releaseBrowser();
+
     return context;
   }
 
