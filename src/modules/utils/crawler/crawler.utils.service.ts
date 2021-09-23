@@ -23,16 +23,28 @@ export class CrawlerServiceUtils {
     isMobile: false,
   };
 
-  async crawl(url: string): Promise<string> {
-    if (!this.browser) {
-      await this.startBrowser();
-    }
-    const currentPage = await this.createPage(url);
-    const context = await currentPage.content();
-    await currentPage.close();
-    await this.releaseBrowser();
+  async crawl(url: string): Promise<Page> {
+    try {
+      if (!this.browser) {
+        await this.startBrowser();
+      }
+      const currentPage = await this.createPage(url);
 
-    return context;
+      return currentPage;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async closePage(page: Page): Promise<void> {
+    try {
+      await page.close();
+      await this.releaseBrowser();
+
+      return;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   public async releaseBrowser(): Promise<void> {
@@ -83,7 +95,7 @@ export class CrawlerServiceUtils {
 
       return page;
     } catch (err) {
-      await page.close();
+      await this.closePage(page);
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

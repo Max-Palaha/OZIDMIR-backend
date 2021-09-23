@@ -14,4 +14,11 @@ export class CrawlerController {
     const { url } = scrapeDto;
     return this.crawlerService.scrapeContent(url);
   }
+
+  @ApiOperation({ summary: 'scrape continents' })
+  @ApiResponse({ status: 200 })
+  @Post('continents')
+  scrapeContinents() {
+    return this.crawlerService.scrapeContinents();
+  }
 }
