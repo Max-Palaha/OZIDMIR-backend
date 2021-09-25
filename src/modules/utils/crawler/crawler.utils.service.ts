@@ -1,29 +1,28 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
+import { ElementHandle } from 'puppeteer';
 import { Browser, Page, Viewport, WaitForOptions } from 'puppeteer';
+import { clickPage, pageOptions, viewPort } from './options';
 
 @Injectable()
 export class CrawlerServiceUtils {
   private readonly USER_AGENT = 'INSERT_USERAGENT';
   private readonly TIMEOUT = 20000;
   private readonly COUNT_OF_DEFAULT_PAGES = 1;
-  private readonly headless = false;
   private readonly slowMo = 0;
   private readonly devTools = false;
+  private readonly headless: boolean;
+  private readonly viewPort: Viewport;
+  private readonly pageOptions: WaitForOptions;
   private browser: Browser;
-  private pageOptions: WaitForOptions = {
-    waitUntil: 'networkidle0',
-  };
-  private readonly viewPort: Viewport = {
-    width: 1920,
-    height: 1080,
-    deviceScaleFactor: 1,
-    hasTouch: false,
-    isLandscape: false,
-    isMobile: false,
-  };
 
-  async crawl(url: string): Promise<Page> {
+  constructor() {
+    this.pageOptions = pageOptions;
+    this.viewPort = viewPort;
+    this.headless = false;
+  }
+
+  public async crawl(url: string): Promise<Page> {
     try {
       if (!this.browser) {
         await this.startBrowser();
@@ -59,6 +58,33 @@ export class CrawlerServiceUtils {
       return;
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async getProperty(
+    element: ElementHandle<Element>,
+    property: string,
+  ): Promise<string> {
+    try {
+      const elementProperty = await element.getProperty(property);
+      const elementData: string = await elementProperty.jsonValue();
+
+      return elementData;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async clickHandler(page: Page, element: ElementHandle<Element>) {
+    try {
+      await Promise.all([
+        element.click(clickPage), // Clicking the link will indirectly cause a navigation
+        page.waitForNavigation(), // The promise resolves after navigation has finished
+      ]);
+    } catch (err) {
+      await this.closePage(page);
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

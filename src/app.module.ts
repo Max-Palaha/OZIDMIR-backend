@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './helpers/http-error.filter';
+import { LoggerInterceptor } from './helpers/logger.interceptor';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import { HttpErrorFilter } from './helpers/http-error.filter';
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
+    },
     {
       provide: APP_FILTER,
       useClass: HttpErrorFilter,
