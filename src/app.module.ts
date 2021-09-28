@@ -6,6 +6,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './helpers/http-error.filter';
 import { LoggerInterceptor } from './helpers/logger.interceptor';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     ),
     UsersModule,
     CrawlerModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [
