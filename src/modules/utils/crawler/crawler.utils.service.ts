@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { ElementHandle } from 'puppeteer';
 import { Browser, Page, Viewport, WaitForOptions } from 'puppeteer';
@@ -16,10 +16,10 @@ export class CrawlerServiceUtils {
   private readonly pageOptions: WaitForOptions;
   private browser: Browser;
 
-  constructor() {
+  constructor(@Inject('HEADLESS') headless: boolean) {
     this.pageOptions = pageOptions;
     this.viewPort = viewPort;
-    this.headless = false;
+    this.headless = headless;
   }
 
   public async crawl(url: string): Promise<Page> {
@@ -28,6 +28,7 @@ export class CrawlerServiceUtils {
         await this.startBrowser();
       }
       const currentPage = await this.createPage(url);
+      await this.disableImages(currentPage);
 
       return currentPage;
     } catch (error) {
@@ -61,10 +62,7 @@ export class CrawlerServiceUtils {
     }
   }
 
-  public async getProperty(
-    element: ElementHandle<Element>,
-    property: string,
-  ): Promise<string> {
+  public async getProperty(element: ElementHandle<Element>, property: string): Promise<string> {
     try {
       const elementProperty = await element.getProperty(property);
       const elementData: string = await elementProperty.jsonValue();
@@ -88,16 +86,12 @@ export class CrawlerServiceUtils {
     }
   }
 
-  private async startBrowser(
-    headless: boolean = this.headless,
-    slowMo: number = this.slowMo,
-    devTools: boolean = this.devTools,
-  ): Promise<void> {
+  private async startBrowser(): Promise<void> {
     try {
       this.browser = await puppeteer.launch({
-        headless,
-        slowMo,
-        devtools: devTools,
+        headless: this.headless,
+        slowMo: this.slowMo,
+        devtools: this.devTools,
         ignoreHTTPSErrors: true,
       });
 
@@ -107,23 +101,35 @@ export class CrawlerServiceUtils {
     }
   }
 
-  private async createPage(
-    url: string,
-    options: WaitForOptions = this.pageOptions,
-  ): Promise<Page> {
+  private async createPage(url: string): Promise<Page> {
     const page = await this.browser.newPage();
     try {
       await page.setViewport(this.viewPort);
       await page.setUserAgent(this.USER_AGENT);
       await page.setJavaScriptEnabled(true);
       page.setDefaultNavigationTimeout(this.TIMEOUT);
-      await page.goto(url, options);
+      await page.goto(url, this.pageOptions);
 
       return page;
     } catch (err) {
       await this.closePage(page);
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private async disableImages(page: Page) {
+    try {
+      await page.setRequestInterception(true);
+      page.on('request', (request) => {
+        if (request.resourceType() === 'document') {
+          request.continue();
+        } else {
+          request.abort();
+        }
+      });
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

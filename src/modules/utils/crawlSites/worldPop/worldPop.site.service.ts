@@ -30,21 +30,14 @@ export class SiteWorldPopService {
     }
   }
 
-  public async scrapeCountryByContinent(
-    continent: string,
-  ): Promise<IScrapeCountries> {
+  public async scrapeCountryByContinent(continent: string): Promise<IScrapeCountries> {
     const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL);
     try {
-      const { continentElements, continents } = await this.scrapeContinents(
-        page,
-      );
+      const { continentElements, continents } = await this.scrapeContinents(page);
       const continentIndex = continents.indexOf(continent);
       // continentIndex === -1
       if (!~continentIndex) {
-        throw new HttpException(
-          'Incorrect name of continent',
-          HttpStatus.NO_CONTENT,
-        );
+        throw new HttpException('Incorrect name of continent', HttpStatus.NO_CONTENT);
       }
 
       const continentElement = continentElements[continentIndex];
@@ -55,11 +48,7 @@ export class SiteWorldPopService {
 
       const countryTableElement = elementTables[this.IC];
       const countryElements = await countryTableElement.$$(this.COUNTRY_RAWS);
-      const countries = await Promise.all(
-        <TCountries[]>(
-          countryElements.map(this.handleCountriesElements.bind(this))
-        ),
-      );
+      const countries = await Promise.all(<TCountries[]>countryElements.map(this.handleCountriesElements.bind(this)));
       await this.crawlerServiceUtil.closePage(page);
 
       return {
@@ -82,13 +71,8 @@ export class SiteWorldPopService {
 
       const contentLists = await page.$$(this.CONTINENTS_LISTS_ID);
       const continentsList = Array.from(contentLists)[this.CONTINENT_LIST];
-      const continentElements = await continentsList.$$(
-        this.CONTINENT_NAMES_ID,
-      );
-      const continents = await continentsList.$$eval(
-        this.CONTINENT_NAMES_ID,
-        (els) => els.map((el) => el.innerHTML),
-      );
+      const continentElements = await continentsList.$$(this.CONTINENT_NAMES_ID);
+      const continents = await continentsList.$$eval(this.CONTINENT_NAMES_ID, (els) => els.map((el) => el.innerHTML));
 
       return {
         continents: Array.from(continents),
@@ -100,13 +84,8 @@ export class SiteWorldPopService {
     }
   }
 
-  private async handleCountriesElements(
-    elCountry: ElementHandle<Element>,
-  ): Promise<TCountries> {
-    const countryData: string = await this.crawlerServiceUtil.getProperty(
-      elCountry,
-      'innerText',
-    );
+  private async handleCountriesElements(elCountry: ElementHandle<Element>): Promise<TCountries> {
+    const countryData: string = await this.crawlerServiceUtil.getProperty(elCountry, 'innerText');
     const [name, population, density] = countryData.split('\t');
 
     return {
