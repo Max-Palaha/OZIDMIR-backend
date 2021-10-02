@@ -36,7 +36,7 @@ export class AuthService {
       throw new UnauthorizedException({ messasge: 'Некорректний email або пароль' });
     }
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-    if (passwordEquals) {
+    if (!passwordEquals) {
       throw new UnauthorizedException({ messasge: 'Некорректний email або пароль' });
     }
 

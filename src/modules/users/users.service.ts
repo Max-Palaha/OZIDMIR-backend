@@ -12,11 +12,9 @@ export class UsersService {
     const user = await this.userModel.create(createUserDto);
     return user.save();
   }
-
   async getAllUsers(): Promise<User[]> {
     return this.userModel.find().exec();
   }
-
   async getUserByEmail(email: string) {
     const user = await this.userModel.findOne({ email });
     return user;

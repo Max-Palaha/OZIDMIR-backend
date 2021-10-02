@@ -1,10 +1,4 @@
-import {
-  Catch,
-  ExceptionFilter,
-  ArgumentsHost,
-  HttpException,
-  Logger,
-} from '@nestjs/common';
+import { Catch, ExceptionFilter, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
 import { ValidationException } from '../exception/validation.exception';
 
 @Catch(HttpException)
@@ -16,9 +10,7 @@ export class HttpErrorFilter implements ExceptionFilter {
     const status = exception?.getStatus();
     const validation = exception.messages || [];
     const { stack } = exception;
-    const stacks = stack
-      ? stack.split('\n').map(this.reformStack).filter(Boolean)
-      : [];
+    const stacks = stack ? stack.split('\n').map(this.reformStack).filter(Boolean) : [];
 
     const errorResult = {
       code: status,
@@ -30,11 +22,7 @@ export class HttpErrorFilter implements ExceptionFilter {
       stack: stacks,
     };
 
-    Logger.error(
-      `${request.method} ${request.url}`,
-      JSON.stringify(errorResult),
-      'ExceptionFilter',
-    );
+    Logger.error(`${request.method} ${request.url}`, JSON.stringify(errorResult), 'ExceptionFilter');
 
     response.status(status).json(errorResult);
   }
