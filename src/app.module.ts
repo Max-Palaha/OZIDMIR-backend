@@ -6,6 +6,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './helpers/http-error.filter';
 import { LoggerInterceptor } from './helpers/logger.interceptor';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RolesModule } from './modules/roles/roles.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MONGO_OPTIONS } from './constants/options';
 
@@ -21,6 +22,7 @@ import { MONGO_OPTIONS } from './constants/options';
     UsersModule,
     CrawlerModule,
     AuthModule,
+    RolesModule,
   ],
   controllers: [],
   providers: [
