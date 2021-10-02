@@ -1,7 +1,7 @@
 import { Viewport, WaitForOptions, ClickOptions } from 'puppeteer';
 
 export const pageOptions: WaitForOptions = {
-  waitUntil: 'networkidle0',
+  waitUntil: 'domcontentloaded',
 };
 export const viewPort: Viewport = {
   width: 1920,

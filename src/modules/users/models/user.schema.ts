@@ -6,14 +6,19 @@ export type UserDocument = User & Document;
 export class User {
   @Prop()
   firstName: string;
+
   @Prop()
   lastName: string;
+
   @Prop({ required: true })
   email: string;
+
   @Prop()
   userName: string;
+
   @Prop({ required: true })
   password: string;
+
   @Prop([String])
   roles: string[];
 }
