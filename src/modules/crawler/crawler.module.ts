@@ -8,12 +8,7 @@ import { CrawlerService } from './crawler.service';
 
 @Module({
   controllers: [CrawlerController],
-  providers: [
-    CrawlerService,
-    SiteNumbeoService,
-    CrawlerServiceUtils,
-    SiteWorldPopService,
-  ],
+  providers: [CrawlerService, SiteNumbeoService, CrawlerServiceUtils, SiteWorldPopService],
   imports: [SiteNumbeoModule],
 })
 export class CrawlerModule {}

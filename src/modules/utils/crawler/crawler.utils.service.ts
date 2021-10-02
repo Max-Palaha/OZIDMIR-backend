@@ -61,10 +61,7 @@ export class CrawlerServiceUtils {
     }
   }
 
-  public async getProperty(
-    element: ElementHandle<Element>,
-    property: string,
-  ): Promise<string> {
+  public async getProperty(element: ElementHandle<Element>, property: string): Promise<string> {
     try {
       const elementProperty = await element.getProperty(property);
       const elementData: string = await elementProperty.jsonValue();
@@ -107,10 +104,7 @@ export class CrawlerServiceUtils {
     }
   }
 
-  private async createPage(
-    url: string,
-    options: WaitForOptions = this.pageOptions,
-  ): Promise<Page> {
+  private async createPage(url: string, options: WaitForOptions = this.pageOptions): Promise<Page> {
     const page = await this.browser.newPage();
     try {
       await page.setViewport(this.viewPort);
