@@ -6,7 +6,8 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './helpers/http-error.filter';
 import { LoggerInterceptor } from './helpers/logger.interceptor';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { MONGO_OPTIONS } from './constants/options';
 
 @Module({
   imports: [
@@ -15,10 +16,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_NAME}?retryWrites=true&w=majority`,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      },
+      MONGO_OPTIONS,
     ),
     UsersModule,
     CrawlerModule,

@@ -10,11 +10,11 @@ import { AuthService } from './auth.service';
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'SECRET' ,
+      secret: process.env.PRIVATE_KEY || 'SECRET',
       signOptions: {
-        expiresIn: '24h'
-      }
-    })
-  ]
+        expiresIn: '24h',
+      },
+    }),
+  ],
 })
 export class AuthModule {}
