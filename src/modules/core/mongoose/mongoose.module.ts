@@ -1,4 +1,4 @@
-import { MONGO_OPTIONS } from 'src/constants/options';
+import { MONGO_OPTIONS } from 'src/modules/core/mongoose/constants/options';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from './interfaces/credentials.interface';
 

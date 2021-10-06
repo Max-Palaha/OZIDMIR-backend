@@ -11,8 +11,6 @@ export class LoggerInterceptor implements NestInterceptor {
 
     Logger.log(`${method} ${url} started 0ms`, context.getClass().name);
 
-    return call
-      .handle()
-      .pipe(tap(() => Logger.log(`${method} ${url} ${Date.now() - currentDate}ms`, context.getClass().name)));
+    return call.handle().pipe(tap(() => Logger.log(`${method} ${url} ${Date.now() - currentDate}ms`, context.getClass().name)));
   }
 }
