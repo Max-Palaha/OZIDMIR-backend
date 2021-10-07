@@ -6,10 +6,7 @@ export type ContinentDocument = Continent & Document;
 
 @Schema()
 export class Continent {
-  @ApiProperty({
-    example: 'ObjectId',
-    description: 'id',
-  })
+  @ApiProperty({ example: 'ObjectId', description: 'id' })
   _id: mongoose.Schema.Types.ObjectId;
 
   @ApiProperty({ example: 'Europe', description: 'name of continent' })

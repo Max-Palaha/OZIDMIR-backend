@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import * as mongoose from 'mongoose';
-import { Roles } from 'src/modules/roles/shemas/roles.shema';
+import { Role } from 'src/modules/role/schemas/role.schema';
 
 export type UserDocument = User & Document;
 
@@ -26,6 +26,7 @@ export class User {
   @Prop({ type: String, required: true })
   userName: string;
 
+  @ApiProperty({ example: 'hash password', description: 'hash password' })
   @Prop({ type: String, required: true })
   password: string;
 
@@ -35,7 +36,7 @@ export class User {
 
   @ApiProperty({ example: 'ObjectId', description: 'RoleId' })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Roles' })
-  roles: Roles[];
+  roles: Role[];
 
   @ApiProperty({ example: 'date', description: 'date of creating' })
   createdAt: Date;
