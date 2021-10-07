@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create.user.dto';
+import { CreateUserDto, UserDto } from './dto';
 import { IUser } from './interfaces';
 import { UsersService } from './users.service';
 
@@ -10,10 +10,10 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, type: [UserDto] })
   @Get()
-  async getAll(): Promise<IUser[]> {
-    return await this.usersService.getUsers();
+  getAll(): Promise<IUser[]> {
+    return this.usersService.getUsers();
   }
 
   @ApiOperation({ summary: 'Test create user' })

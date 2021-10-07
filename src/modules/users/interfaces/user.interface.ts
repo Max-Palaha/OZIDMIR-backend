@@ -5,7 +5,6 @@ export type IUser = {
   userName: string;
   firstName?: string;
   lastName?: string;
-  groupName?: string;
   avatar?: string;
   createdAt: Date;
 };

@@ -28,7 +28,7 @@ export class UsersService {
     return users.map(dumpUser);
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmailAuth(email: string) {
     const user = await this.userModel.findOne({ email }).lean();
 
     return user;
