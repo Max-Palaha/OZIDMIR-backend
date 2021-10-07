@@ -12,6 +12,7 @@ export class RolesService {
     const role = await this.roleModel.create(createRoleDto);
     return role.save();
   }
+
   async getAllRoles(): Promise<Roles[]> {
     return this.roleModel.find().exec();
   }
