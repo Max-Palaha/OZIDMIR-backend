@@ -5,9 +5,10 @@ import { UsersModule } from './modules/users/users.module';
 import { RoleModule } from './modules/role/role.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './modules/core/core.module';
+import { MailModule } from './modules/core/mail/mail.module';
 
 @Module({
-  imports: [CoreModule, UsersModule, CrawlerModule, AuthModule, RoleModule],
+  imports: [CoreModule, UsersModule, CrawlerModule, AuthModule, RoleModule, MailModule],
   controllers: [],
   providers: [LoggerInterceptorProvider, HttpErrorFilterProvider],
 })
