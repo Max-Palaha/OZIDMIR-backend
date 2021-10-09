@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ContinentService } from '../continents/continent.service';
+import { ContinentService } from '../continent/continent.service';
 import { SiteNumbeoService } from '../utils/crawlSites/numbeo/numbeo.site.service';
 import { IScrapeContinents, IScrapeCountries, TCountries } from '../utils/crawlSites/worldPop/interfaces';
 import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';

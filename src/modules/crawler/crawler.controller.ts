@@ -1,9 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CrawlerService } from './crawler.service';
 import { ScrapeCountryDto } from './dto/scrape.country.dto';
 import { ScrapeDto } from './dto/scrape.crawler.dto';
 
+@ApiTags('Crawler')
 @Controller('crawler')
 export class CrawlerController {
   constructor(private crawlerService: CrawlerService) {}

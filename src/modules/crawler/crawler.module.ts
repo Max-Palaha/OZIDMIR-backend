@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ContinentModule } from '../continents/continent.module';
+import { ContinentModule } from '../continent/continent.module';
 import { SiteNumbeoModule } from '../utils/crawlSites/numbeo/numbeo.site.module';
 import { SiteWorldPopModule } from '../utils/crawlSites/worldPop/worldPop.site.module';
 import { CrawlerController } from './crawler.controller';

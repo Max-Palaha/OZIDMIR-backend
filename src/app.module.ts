@@ -1,42 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from './modules/users/users.module';
+import { HttpErrorFilterProvider, LoggerInterceptorProvider } from './utils/global.providers';
 import { CrawlerModule } from './modules/crawler/crawler.module';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { HttpErrorFilter } from './helpers/http-error.filter';
-import { LoggerInterceptor } from './helpers/logger.interceptor';
-import { MongooseModule } from '@nestjs/mongoose';
-import { RolesModule } from './modules/roles/roles.module';
+import { UsersModule } from './modules/users/users.module';
+import { RoleModule } from './modules/role/role.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { MongoModule } from './modules/core/mongoose/mongoose.module';
-import configuration from './helpers/configuration';
+import { CoreModule } from './modules/core/core.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      load: [configuration],
-      envFilePath: `.${process.env.NODE_ENV}.env`,
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: MongoModule.useFactory,
-      inject: [ConfigService],
-    }),
-    UsersModule,
-    CrawlerModule,
-    AuthModule,
-    RolesModule,
-  ],
+  imports: [CoreModule, UsersModule, CrawlerModule, AuthModule, RoleModule],
   controllers: [],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggerInterceptor,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: HttpErrorFilter,
-    },
-  ],
+  providers: [LoggerInterceptorProvider, HttpErrorFilterProvider],
 })
 export class AppModule {}
