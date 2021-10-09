@@ -4,9 +4,12 @@ import { Observable } from "node_modules/rxjs/dist/types";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate{
-    constructor(private jwtService: JwtService,private userUnauthorized:'Користувач не авторизован'){
+    private userUnauthorized = 'Користувач не авторизован';
+
+    constructor(private jwtService: JwtService){
 
     }
+
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const req = context.switchToHttp().getRequest();

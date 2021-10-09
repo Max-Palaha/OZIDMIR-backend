@@ -14,7 +14,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [UserDto] })
-  @UseGuards(JwtModule)
+  @UseGuards(JwtAuthGuard)
   @Get()
   getAll(): Promise<IUser[]> {
     return this.usersService.getUsers();

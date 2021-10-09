@@ -25,4 +25,9 @@ export class RoleService {
     const roles = await this.roleModel.find().lean();
     return roles.map(dumpRole);
   }
+
+  async getRolesByName(name:string): Promise<IRole> {
+    const role = await this.roleModel.findOne({ name }).lean();
+    return dumpRole(role);
+  }
 }
