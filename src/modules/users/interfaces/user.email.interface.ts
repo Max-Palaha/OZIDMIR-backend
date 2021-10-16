@@ -1,4 +1,5 @@
 export interface IUserEmail {
-  email: string;
-  name: string;
+  url: string;
+  firstName: string;
+  lastName: string;
 }
