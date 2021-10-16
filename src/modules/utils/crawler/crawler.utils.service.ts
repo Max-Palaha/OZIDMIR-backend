@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Browser, Page, Viewport, WaitForOptions, ElementHandle } from 'puppeteer';
 import * as puppeteer from 'puppeteer';
-import { ElementHandle } from 'puppeteer';
-import { Browser, Page, Viewport, WaitForOptions } from 'puppeteer';
-import { clickPage, pageOptions, viewPort } from './options';
+
+import { clickPage, pageOptions, viewPort } from './helpers/crawler.options';
 
 @Injectable()
 export class CrawlerServiceUtils {

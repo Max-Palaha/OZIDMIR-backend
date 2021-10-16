@@ -5,10 +5,17 @@ import { CreateRoleDto } from './dto';
 import { Model } from 'mongoose';
 import { dumpRole } from './dump';
 import { IRole } from './interfaces';
+import { Logger } from '../core/logger/helpers/logger.decorator';
+import { LoggerService } from '../core/logger/logger.service';
 
 @Injectable()
 export class RoleService {
-  constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) {}
+  constructor(
+    @Logger('RoleService') private logger: LoggerService,
+    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
+  ) {
+    this.logger.log('role');
+  }
 
   async createRole(createRoleDto: CreateRoleDto): Promise<boolean> {
     try {

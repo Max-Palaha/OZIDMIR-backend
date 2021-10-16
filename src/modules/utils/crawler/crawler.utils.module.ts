@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HEADLESS, headlessProvider } from './constants';
+import { HEADLESS, headlessProvider } from './helpers/crawler.providers';
 import { CrawlerServiceUtils } from './crawler.utils.service';
 
 @Module({

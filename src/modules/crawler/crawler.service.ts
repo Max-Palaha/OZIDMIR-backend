@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ContinentService } from '../continent/continent.service';
 import { SiteNumbeoService } from '../utils/crawlSites/numbeo/numbeo.site.service';
-import { IScrapeContinents, IScrapeCountries, TCountries } from '../utils/crawlSites/worldPop/interfaces';
+import { IScrapeContinents, IScrapeCountries, ICountries } from '../utils/crawlSites/worldPop/interfaces';
 import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class CrawlerService {
     return true;
   }
 
-  async scrapeCountry(continent: string): Promise<TCountries[]> {
+  async scrapeCountry(continent: string): Promise<ICountries[]> {
     const { countries }: IScrapeCountries = await this.worldPopService.scrapeCountryByContinent(continent);
 
     return countries;

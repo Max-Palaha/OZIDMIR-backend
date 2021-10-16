@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ElementHandle, Page } from 'puppeteer';
 import { CrawlerServiceUtils } from '../../crawler/crawler.utils.service';
-import { IScrapeCountries, IScrapeContinents, TCountries } from './interfaces';
+import { IScrapeCountries, IScrapeContinents, ICountries } from './interfaces';
 
 @Injectable()
 export class SiteWorldPopService {
@@ -48,7 +48,7 @@ export class SiteWorldPopService {
 
       const countryTableElement = elementTables[this.IC];
       const countryElements = await countryTableElement.$$(this.COUNTRY_RAWS);
-      const countries = await Promise.all(<TCountries[]>countryElements.map(this.handleCountriesElements.bind(this)));
+      const countries = await Promise.all(<ICountries[]>countryElements.map(this.handleCountriesElements.bind(this)));
       await this.crawlerServiceUtil.closePage(page);
 
       return {
@@ -84,7 +84,7 @@ export class SiteWorldPopService {
     }
   }
 
-  private async handleCountriesElements(elCountry: ElementHandle<Element>): Promise<TCountries> {
+  private async handleCountriesElements(elCountry: ElementHandle<Element>): Promise<ICountries> {
     const countryData: string = await this.crawlerServiceUtil.getProperty(elCountry, 'innerText');
     const [name, population, density] = countryData.split('\t');
 
