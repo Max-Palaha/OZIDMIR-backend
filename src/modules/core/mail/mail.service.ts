@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { IUser, IUserEmail } from '../../users/interfaces';
 import { ISendMail } from './interfaces';
 
@@ -7,15 +7,16 @@ import { ISendMail } from './interfaces';
 export class MailService {
   // sendUserResetPassword
   private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
-  private readonly RESET_PASSWORD_PATH = './templates/passMail';
+  private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
+  private readonly DEFAULT_USER = 'OZIMIDR user';
 
   constructor(private mailerService: MailerService) {}
 
-  async sendUserResetPassword(user: IUser, code: string) {
+  async sendUserResetPassword(user: IUser, code: string): Promise<void> {
     const url = `${process.env.APP_PATH}/auth/confirm?code=${code}`;
     const context: IUserEmail = {
       url,
-      firstName: user.firstName || '',
+      firstName: user.firstName || this.DEFAULT_USER,
       lastName: user.lastName || '',
     };
 
@@ -27,13 +28,17 @@ export class MailService {
     });
   }
 
-  private async send({ context, template, to, subject }: ISendMail) {
-    await this.mailerService.sendMail({
-      to,
-      from: process.env.DEFAULT_APP_EMAIL,
-      subject,
-      template,
-      context,
-    });
+  private async send({ context, template, to, subject }: ISendMail): Promise<void> {
+    try {
+      await this.mailerService.sendMail({
+        to,
+        from: process.env.DEFAULT_APP_EMAIL,
+        subject,
+        template,
+        context,
+      });
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
