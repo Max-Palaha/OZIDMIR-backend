@@ -5,6 +5,7 @@ import { CreateRoleDto } from './dto';
 import { Model } from 'mongoose';
 import { dumpRole } from './dump';
 import { IRole } from './interfaces';
+import getRoleDump from './dump/get.role.dump';
 
 @Injectable()
 export class RoleService {
@@ -26,8 +27,8 @@ export class RoleService {
     return roles.map(dumpRole);
   }
 
-  async getRolesByName(name:string): Promise<IRole> {
+  async getRoleByName(name:string): Promise<IRole> {
     const role = await this.roleModel.findOne({ name }).lean();
-    return dumpRole(role);
+    return getRoleDump(role);
   }
 }
