@@ -9,15 +9,16 @@ import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>,
-              private roleService: RoleService) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private roleService: RoleService) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const user = await this.userModel.create(createUserDto);
-      //const role = await this.roleService.getRoleByName("ADMIN");
-      //await user.$set('roles',[role.id]);
-      //user.roles = [role];
+      const role = await this.roleService.getRoleByName('ADMIN');
+      const user = await this.userModel.create({
+        ...createUserDto,
+        roles: [role.id],
+      });
+
       await user.save();
 
       return true;
@@ -27,7 +28,7 @@ export class UsersService {
   }
 
   async getUsers(): Promise<IUser[]> {
-    const users = await this.userModel.find().lean();
+    const users = await this.userModel.find().populate('roles').lean();
 
     return users.map(dumpUser);
   }

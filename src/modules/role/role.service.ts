@@ -27,7 +27,7 @@ export class RoleService {
     return roles.map(dumpRole);
   }
 
-  async getRoleByName(name:string): Promise<IRole> {
+  async getRoleByName(name: string): Promise<IRole> {
     const role = await this.roleModel.findOne({ name }).lean();
     return getRoleDump(role);
   }
