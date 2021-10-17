@@ -13,7 +13,7 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const role = await this.roleService.getRoleByName('ADMIN');
+      const role = await this.roleService.getRoleByName('USER');
       const user = await this.userModel.create({
         ...createUserDto,
         roles: [role.id],
@@ -34,7 +34,7 @@ export class UsersService {
   }
 
   async getUserByEmailAuth(email: string) {
-    const user = await this.userModel.findOne({ email }).lean();
+    const user = await this.userModel.findOne({ email }).populate('roles').lean();
 
     return user;
   }

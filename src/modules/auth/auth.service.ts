@@ -28,7 +28,6 @@ export class AuthService {
       throw new HttpException(this.EXIST_EMAIL_ERROR, HttpStatus.BAD_REQUEST);
     }
     const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
-    //await this.userService.getUserByEmailAuth(userDto.email);
     await this.userService.createUser({ ...userDto, password: hashPassword });
     const user = await this.userService.getUserByEmailAuth(userDto.email);
 
