@@ -5,6 +5,7 @@ import { CreateRoleDto } from './dto';
 import { Model } from 'mongoose';
 import { dumpRole } from './dump';
 import { IRole } from './interfaces';
+import getRoleDump from './dump/get.role.dump';
 import { Logger } from '../core/logger/helpers/logger.decorator';
 import { LoggerService } from '../core/logger/logger.service';
 
@@ -31,5 +32,10 @@ export class RoleService {
   async getRoles(): Promise<IRole[]> {
     const roles = await this.roleModel.find().lean();
     return roles.map(dumpRole);
+  }
+
+  async getRoleByName(name: string): Promise<IRole> {
+    const role = await this.roleModel.findOne({ name }).lean();
+    return getRoleDump(role);
   }
 }

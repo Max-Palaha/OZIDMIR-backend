@@ -41,4 +41,20 @@ export class MailService {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async sendUserConfirmation() {
+    //const url = `example.com/auth/confirm?token=${token}`;
+
+    await this.mailerService.sendMail({
+      to: 'example@gmail.com',
+      from: 'example@gmail.com', // override default from
+      subject: 'Welcome to Nice App! Confirm your Email',
+      template: './templates/passMail', // .hbs extension is appended automatically
+      context: {
+        // ✏️ filling curly brackets with content
+        //name: user.name,
+        //url,
+      },
+    });
+  }
 }
