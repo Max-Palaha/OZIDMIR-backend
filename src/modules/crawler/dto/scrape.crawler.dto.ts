@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 export class ScrapeDto {
-  @ApiProperty({ example: 'ObjectId', description: 'url of site', required: true })
-  @IsString({ message: 'Необхідний тип string' })
+  @ApiProperty({ example: 'url', description: 'url of site', required: true })
+  @IsString({ message: 'Necessary type string' })
   readonly url: string;
 }
