@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoModule } from './mongoose/mongoose.module';
+import { MailModule } from './mail/mail.module';
 import configuration from '../../helpers/configuration';
 
 @Module({
@@ -15,6 +16,7 @@ import configuration from '../../helpers/configuration';
       useFactory: MongoModule.useFactory,
       inject: [ConfigService],
     }),
+    MailModule,
   ],
   controllers: [],
   providers: [],

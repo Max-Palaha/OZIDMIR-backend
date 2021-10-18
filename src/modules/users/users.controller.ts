@@ -1,5 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/roles-auth.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 import { CreateUserDto, UserDto } from './dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { IUser } from './interfaces';
@@ -12,6 +14,8 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [UserDto] })
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
   @Get()
   getAll(): Promise<IUser[]> {
     return this.usersService.getUsers();

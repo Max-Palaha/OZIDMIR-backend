@@ -6,15 +6,20 @@ import { UpdateUserDto } from './dto/update.user.dto';
 import { dumpUser } from './dump';
 import { IUser } from './interfaces';
 import { User, UserDocument } from './schemas/user.schema';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class UsersService {
   private readonly NOT_EXIST = 'User not found';
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private roleService: RoleService) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<boolean> {
     try {
-      const user = await this.userModel.create(createUserDto);
+      const role = await this.roleService.getRoleByName('USER');
+      const user = await this.userModel.create({
+        ...createUserDto,
+        roles: [role.id],
+      });
 
       await user.save();
 
@@ -25,13 +30,13 @@ export class UsersService {
   }
 
   async getUsers(): Promise<IUser[]> {
-    const users = await this.userModel.find().lean();
+    const users = await this.userModel.find().populate('roles').lean();
 
     return users.map(dumpUser);
   }
 
   async getUserByEmailAuth(email: string) {
-    const user = await this.userModel.findOne({ email }).lean();
+    const user = await this.userModel.findOne({ email }).populate('roles').lean();
 
     return user;
   }
