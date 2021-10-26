@@ -16,5 +16,6 @@ import { LoggerModule } from '../core/logger/logger.module';
       },
     ]),
   ],
+  exports: [RoleService],
 })
 export class RoleModule {}

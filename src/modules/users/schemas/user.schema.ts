@@ -35,7 +35,7 @@ export class User {
   avatar: string;
 
   @ApiProperty({ example: 'ObjectId', description: 'RoleId' })
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Roles' })
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Role' })
   roles: Role[];
 
   @ApiProperty({ example: 'date', description: 'date of creating' })
