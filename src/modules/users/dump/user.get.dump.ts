@@ -6,6 +6,7 @@ export default (user: UserDocument): IUser => {
     id: user._id.toString(),
     roles: user.roles && user.roles.map((role) => role.name),
     email: user.email,
+    isActivated: user.isActivated,
     firstName: user.firstName,
     lastName: user.lastName,
     userName: user.userName,

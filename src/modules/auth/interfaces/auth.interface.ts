@@ -1,6 +1,7 @@
 import { IUser } from 'src/modules/users/interfaces';
+import { IToken } from '.';
 
 export type IAuth = {
-  token: string;
+  token: IToken,
   user: IUser;
 };

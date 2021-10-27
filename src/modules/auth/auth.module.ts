@@ -5,11 +5,13 @@ import { RoleModule } from '../role/role.module';
 import { MailModule } from '../core/mail/mail.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { TokensModule } from '../tokens/tokens.module';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
   imports: [
+    TokensModule,
     forwardRef(() => UsersModule),
     RoleModule,
     UsersModule,
@@ -17,7 +19,7 @@ import { AuthService } from './auth.service';
     JwtModule.register({
       secret: process.env.PRIVATE_KEY || 'SECRET',
       signOptions: {
-        expiresIn: '24h',
+        expiresIn: '60s',
       },
     }),
   ],
