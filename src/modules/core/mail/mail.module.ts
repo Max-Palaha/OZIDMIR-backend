@@ -8,8 +8,8 @@ import { join } from 'path';
   imports: [
     MailerModule.forRoot({
       transport: {
-        port: process.env.MAILER_PORT,
         host: process.env.MAILER_HOST,
+        port: parseInt(process.env.MAILER_PORT, 10),        
         secure: false,
         auth: {
           user: process.env.DEFAULT_APP_EMAIL,

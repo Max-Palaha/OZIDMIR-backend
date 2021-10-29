@@ -33,7 +33,7 @@ export class AuthService {
     const activationLink = uuidv4();
     await this.userService.createUser({ ...userDto, password: hashPassword, activationLink});
     const user = await this.userService.getUserByEmailAuth(userDto.email);
-    await this.mailService.sendActivationMail(userDto.email, activationLink);
+    await this.mailService.sendActivationMail(userDto.email, `${process.env.API_URL}/api/activate/${activationLink}`);
     const tokens = await this.tokensService.generateTokens(user);
     await this.tokensService.saveToken(user._id, tokens.refreshToken)
     return {

@@ -5,9 +5,12 @@ import { ISendMail } from './interfaces';
 
 @Injectable()
 export class MailService {
+  
   // sendUserResetPassword
   private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
   private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
+  private readonly ACTIVATION_MAIL_SUBJECT = 'Reset your OZIMIDR password';
+  private readonly ACTIVATION_MAIL_PATH = './templates/activationMail';
   private readonly DEFAULT_USER = 'OZIMIDR user';
 
   constructor(private mailerService: MailerService) {}
@@ -24,6 +27,19 @@ export class MailService {
       to: user.email,
       subject: this.RESET_PASSWORD_SUBJECT,
       template: this.RESET_PASSWORD_PATH,
+      context,
+    });
+  }
+
+  async sendActivationMail(to: string, link : string): Promise<void> {
+    const context = {
+      link,
+    };
+
+    await this.send({
+      to,
+      subject: this.ACTIVATION_MAIL_SUBJECT,
+      template: this.ACTIVATION_MAIL_PATH,
       context,
     });
   }
@@ -56,9 +72,5 @@ export class MailService {
         //url,
       },
     });
-  }
-
-  async sendActivationMail(to,link){
-
-  }
+  }  
 }
