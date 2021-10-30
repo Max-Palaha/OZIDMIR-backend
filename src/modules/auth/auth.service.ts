@@ -16,7 +16,11 @@ export class AuthService {
 
   // validateUser
   private readonly WRONG_AUTH = 'Wrong email or password';
-  constructor(private userService: UsersService, private mailService: MailService, private tokensService: TokensService) {}
+  constructor(
+    private userService: UsersService,
+    private mailService: MailService,
+    private tokensService: TokensService,
+  ) {}
 
   // async login(userDto: CreateUserDto): Promise<IAuth> {
   //   const user = await this.validateUser(userDto);
@@ -31,15 +35,15 @@ export class AuthService {
     const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
 
     const activationLink = uuidv4();
-    await this.userService.createUser({ ...userDto, password: hashPassword, activationLink});
+    await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
     const user = await this.userService.getUserByEmailAuth(userDto.email);
     await this.mailService.sendActivationMail(userDto.email, `${process.env.API_URL}/api/activate/${activationLink}`);
     const tokens = await this.tokensService.generateTokens(user);
-    await this.tokensService.saveToken(user._id, tokens.refreshToken)
+    await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
       token: tokens,
       user: dumpUser(user),
-    }
+    };
   }
 
   async validateUser(userDto: CreateUserDto): Promise<UserDocument> {

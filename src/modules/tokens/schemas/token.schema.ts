@@ -13,7 +13,7 @@ export class Token {
 
   @ApiProperty({ example: 'refreshToken', description: 'refreshToken' })
   @Prop({ type: String, required: true })
-  refreshToken: String;
+  refreshToken: string;
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);

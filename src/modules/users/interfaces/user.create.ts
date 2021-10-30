@@ -1,5 +1,5 @@
 export interface IUserCreate {
-    email: string;
-    password: string;
-    activationLink?: string;
-  }
+  email: string;
+  password: string;
+  activationLink?: string;
+}

@@ -5,16 +5,16 @@ import { Token, TokenSchema } from './schemas/token.schema';
 import { TokensService } from './tokens.service';
 
 @Module({
-    providers: [TokensService],
-    imports: [
-        MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
-        JwtModule.register({
-          secret: process.env.PRIVATE_KEY || 'SECRET',
-          signOptions: {
-            expiresIn: '60s',
-          },
-        }),
-    ],
-    exports: [TokensService,JwtModule],
+  providers: [TokensService],
+  imports: [
+    MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
+    JwtModule.register({
+      secret: process.env.PRIVATE_KEY || 'SECRET',
+      signOptions: {
+        expiresIn: '60s',
+      },
+    }),
+  ],
+  exports: [TokensService, JwtModule],
 })
 export class TokensModule {}

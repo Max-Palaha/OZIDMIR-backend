@@ -5,7 +5,6 @@ import { ISendMail } from './interfaces';
 
 @Injectable()
 export class MailService {
-  
   // sendUserResetPassword
   private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
   private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
@@ -31,24 +30,27 @@ export class MailService {
     });
   }
 
-  async sendActivationMail(to: string, link : string): Promise<void> {
+  async sendActivationMail(to: string, link: string): Promise<void> {
     const context = {
       link,
     };
-
-    await this.send({
-      to,
-      subject: this.ACTIVATION_MAIL_SUBJECT,
-      template: this.ACTIVATION_MAIL_PATH,
-      context,
-    });
+    try {
+      await this.send({
+        to,
+        subject: this.ACTIVATION_MAIL_SUBJECT,
+        template: this.ACTIVATION_MAIL_PATH,
+        context,
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   private async send({ context, template, to, subject }: ISendMail): Promise<void> {
     try {
       await this.mailerService.sendMail({
         to,
-        from: process.env.DEFAULT_APP_EMAIL,
+        from: process.env.SMTP_EMAIL,
         subject,
         template,
         context,
@@ -72,5 +74,5 @@ export class MailService {
         //url,
       },
     });
-  }  
+  }
 }

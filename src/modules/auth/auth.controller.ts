@@ -21,15 +21,17 @@ export class AuthController {
   @ApiOperation({ summary: 'User registration' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/registration')
-  async registration(@Body() userDto: CreateUserDto,@Res({ passthrough: true }) response: Response) {
+  async registration(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) response: Response) {
     try {
       const userData = await this.authService.registration(userDto);
-      response.cookie('refreshToken',userData.token.refreshToken, {maxAge:30*24*60*60*1000, httpOnly:true});
-      return userData;      
-    } catch(e) {
+      response.cookie('refreshToken', userData.token.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      return userData;
+    } catch (e) {
       console.log(e);
     }
-    
   }
 
   @ApiOperation({ summary: 'User resetPass' })
