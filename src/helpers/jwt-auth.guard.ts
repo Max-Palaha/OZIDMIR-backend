@@ -16,11 +16,10 @@ export class JwtAuthGuard implements CanActivate {
       console.log(authHeader);
       const [bearer, token] = authHeader.split(' ');
       if (bearer !== 'Bearer' || !token) {
-        
         throw new UnauthorizedException({ message: this.userUnauthorized });
       }
 
-      const user = this.jwtService.verify(token, {secret: process.env.JWT_ACCESS_SECRET});
+      const user = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
       console.log(user);
       req.user = user;
 

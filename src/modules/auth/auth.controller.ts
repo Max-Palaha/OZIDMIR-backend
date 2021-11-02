@@ -47,20 +47,20 @@ export class AuthController {
   @ApiOperation({ summary: 'User activate' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Get('/activate/:activationLink')
-  async activate(@Res({ passthrough: true }) res: Response,@Param() params: ParamActivationLinkDto) {
+  async activate(@Res({ passthrough: true }) res: Response, @Param() params: ParamActivationLinkDto) {
     try {
       const activationLink = params.activationLink;
       await this.authService.activate(activationLink);
-      return res.redirect(process.env.CLIENT_URL)
-    } catch(e){
+      return res.redirect(process.env.CLIENT_URL);
+    } catch (e) {
       console.log(e);
     }
   }
 
   @Get('/refresh')
-  async refresh(@Res({ passthrough: true }) res: Response,@Req() req: Request){
+  async refresh(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
     try {
-      const {refreshToken} = req.cookies;
+      const { refreshToken } = req.cookies;
       const userData = await this.authService.refresh(refreshToken);
       console.log(userData);
       res.cookie('refreshToken', userData.token.refreshToken, {
@@ -68,7 +68,7 @@ export class AuthController {
         httpOnly: true,
       });
       return res.json(userData);
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
   }
@@ -76,13 +76,13 @@ export class AuthController {
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/logout')
-  async logout(@Req() req: Request,@Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      const {refreshToken} = req.cookies;
+      const { refreshToken } = req.cookies;
       const token = await this.authService.logout(refreshToken);
       res.clearCookie('refreshToken');
       return res.json(token);
-    } catch(e){
+    } catch (e) {
       console.log(e);
     }
   }

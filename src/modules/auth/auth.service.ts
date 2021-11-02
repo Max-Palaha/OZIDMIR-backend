@@ -10,7 +10,6 @@ import { TokensService } from '../tokens/tokens.service';
 import { dumpUser } from '../users/dump';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { use } from 'passport';
 @Injectable()
 export class AuthService {
   // registration
@@ -32,7 +31,7 @@ export class AuthService {
   //   const user = await this.validateUser(userDto);
   //   return this.tokensService.generateTokens(user);
   // }
-  
+
   async login(userDto: CreateUserDto): Promise<IAuth> {
     console.log(userDto);
     const user = await this.validateUser(userDto);
@@ -65,14 +64,14 @@ export class AuthService {
 
   async activate(activationLink: string): Promise<void> {
     const user = await this.userService.getUserByActivationLink(activationLink);
-    if (!user){
+    if (!user) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
     user.isActivated = true;
     await user.save();
   }
 
-  async refresh(refreshToken){
+  async refresh(refreshToken) {
     if (!refreshToken) {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
@@ -94,7 +93,7 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken){
+  async logout(refreshToken) {
     const token = await this.tokensService.removeToken(refreshToken);
     return token;
   }
