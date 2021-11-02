@@ -6,11 +6,14 @@ import { MailModule } from '../core/mail/mail.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TokensModule } from '../tokens/tokens.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from '../users/schemas/user.schema';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
   imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     TokensModule,
     forwardRef(() => UsersModule),
     RoleModule,
@@ -19,7 +22,7 @@ import { TokensModule } from '../tokens/tokens.module';
     JwtModule.register({
       secret: process.env.PRIVATE_KEY || 'SECRET',
       signOptions: {
-        expiresIn: '60s',
+        expiresIn: '30d',
       },
     }),
   ],

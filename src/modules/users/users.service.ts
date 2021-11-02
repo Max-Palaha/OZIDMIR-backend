@@ -38,4 +38,10 @@ export class UsersService {
 
     return user;
   }
+
+  async getUserByActivationLink(activationLink: string) {
+    const user = await this.userModel.findOne({ activationLink });
+
+    return user;
+  }
 }

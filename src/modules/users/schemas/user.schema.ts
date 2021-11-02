@@ -30,11 +30,11 @@ export class User {
   @Prop({ type: String, required: true })
   password: string;
 
-  @ApiProperty({ example: 'isActivated', description: 'activationLink' })
+  @ApiProperty({ example: 'isActivated', description: 'Activated account' })
   @Prop({ type: Boolean, default: false })
   isActivated: boolean;
 
-  @ApiProperty({ example: 'activationLink', description: 'activationLink' })
+  @ApiProperty({ example: 'Link', description: 'Activation Link' })
   @Prop({ type: String })
   activationLink: string;
 

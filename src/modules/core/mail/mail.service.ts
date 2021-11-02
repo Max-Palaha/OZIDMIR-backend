@@ -8,7 +8,7 @@ export class MailService {
   // sendUserResetPassword
   private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
   private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
-  private readonly ACTIVATION_MAIL_SUBJECT = 'Reset your OZIMIDR password';
+  private readonly ACTIVATION_MAIL_SUBJECT = 'Activation account by mail';
   private readonly ACTIVATION_MAIL_PATH = './templates/activationMail';
   private readonly DEFAULT_USER = 'OZIMIDR user';
 
