@@ -2,14 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/modules/users/dto/create.user.dto';
 import { UsersService } from 'src/modules/users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { User, UserDocument } from '../users/schemas/user.schema';
-import { IAuth } from './interfaces';
+import { UserDocument } from '../users/schemas/user.schema';
+import { IAuth, IToken } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { MailService } from '../core/mail/mail.service';
 import { TokensService } from '../tokens/tokens.service';
 import { dumpUser } from '../users/dump';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   // registration
@@ -21,21 +20,16 @@ export class AuthService {
   private readonly WRONG_REFRESH = 'Wrong REFRESH';
 
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
     private userService: UsersService,
     private mailService: MailService,
     private tokensService: TokensService,
   ) {}
 
-  // async login(userDto: CreateUserDto): Promise<IAuth> {
-  //   const user = await this.validateUser(userDto);
-  //   return this.tokensService.generateTokens(user);
-  // }
-
   async login(userDto: CreateUserDto): Promise<IAuth> {
     console.log(userDto);
     const user = await this.validateUser(userDto);
-    const tokens = await this.tokensService.generateTokens(user);
+    const tokens = await this.generateTokens(user);
     await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
       token: tokens,
@@ -54,7 +48,7 @@ export class AuthService {
     await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
     const user = await this.userService.getUserByEmailAuth(userDto.email);
     await this.mailService.sendActivationMail(userDto.email, `${process.env.API_URL}/auth/activate/${activationLink}`);
-    const tokens = await this.tokensService.generateTokens(user);
+    const tokens = await this.generateTokens(user);
     await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
       token: tokens,
@@ -76,7 +70,7 @@ export class AuthService {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
 
-    const userData = this.tokensService.validateRefreshToken(refreshToken);
+    const userData = this.validateRefreshToken(refreshToken);
     const tokenFromDb = await this.tokensService.findToken(refreshToken);
 
     if (!userData || !tokenFromDb) {
@@ -85,7 +79,7 @@ export class AuthService {
 
     const userDto = await this.userService.getUserByEmailAuth(userData.email);
 
-    const tokens = await this.tokensService.generateTokens(userDto);
+    const tokens = await this.generateTokens(userDto);
     await this.tokensService.saveToken(userDto._id, tokens.refreshToken);
     return {
       token: tokens,
@@ -96,6 +90,16 @@ export class AuthService {
   async logout(refreshToken) {
     const token = await this.tokensService.removeToken(refreshToken);
     return token;
+  }
+
+  async generateTokens(user: UserDocument): Promise<IToken> {
+    const payload = dumpUser(user);
+    const accessToken = this.jwtService.sign(payload, { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '30s' });
+    const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '30d' });
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async validateUser(userDto: CreateUserDto): Promise<UserDocument> {
@@ -114,5 +118,23 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  validateAccessToken(token: string) {
+    try {
+      const userData = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
+      return userData;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  validateRefreshToken(token: string) {
+    try {
+      const userData = this.jwtService.verify(token, { secret: process.env.JWT_REFRESH_SECRET });
+      return userData;
+    } catch (e) {
+      return null;
+    }
   }
 }

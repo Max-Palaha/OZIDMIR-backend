@@ -10,7 +10,7 @@ import { Response, Request } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService, private mailService: MailService) {}
-  private readonly MaxAge = 30 * 24 * 60 * 60 * 1000;
+  private readonly MONTH_IN_SECONDS = 30 * 24 * 60 * 60 * 1000;
 
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, type: AuthDto })
@@ -19,7 +19,7 @@ export class AuthController {
     try {
       const userData = await this.authService.login(userDto);
       res.cookie('refreshToken', userData.token.refreshToken, {
-        maxAge: this.MaxAge,
+        maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
       return userData;
@@ -35,7 +35,7 @@ export class AuthController {
     try {
       const userData = await this.authService.registration(userDto);
       res.cookie('refreshToken', userData.token.refreshToken, {
-        maxAge: this.MaxAge,
+        maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
       return userData;
@@ -47,11 +47,10 @@ export class AuthController {
   @ApiOperation({ summary: 'User activate' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Get('/activate/:activationLink')
-  async activate(@Res({ passthrough: true }) res: Response, @Param() params: ParamActivationLinkDto) {
+  async activate(@Param() params: ParamActivationLinkDto) {
     try {
       const activationLink = params.activationLink;
       await this.authService.activate(activationLink);
-      return res.redirect(process.env.CLIENT_URL);
     } catch (e) {
       console.log(e);
     }
@@ -64,10 +63,10 @@ export class AuthController {
       const userData = await this.authService.refresh(refreshToken);
       console.log(userData);
       res.cookie('refreshToken', userData.token.refreshToken, {
-        maxAge: this.MaxAge,
+        maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
-      return res.json(userData);
+      return userData;
     } catch (e) {
       console.log(e);
     }
@@ -81,7 +80,7 @@ export class AuthController {
       const { refreshToken } = req.cookies;
       const token = await this.authService.logout(refreshToken);
       res.clearCookie('refreshToken');
-      return res.json(token);
+      return token;
     } catch (e) {
       console.log(e);
     }
