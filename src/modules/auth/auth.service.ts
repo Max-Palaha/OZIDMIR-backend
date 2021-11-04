@@ -17,7 +17,13 @@ export class AuthService {
 
   // validateUser
   private readonly WRONG_AUTH = 'Wrong email or password';
+
+  // activLink
+  private readonly WRONG_ACTIVLINK = 'Wrong actovation link';
+
+  // refresh token
   private readonly WRONG_REFRESH = 'Wrong REFRESH';
+
 
   constructor(
     private jwtService: JwtService,
@@ -27,39 +33,47 @@ export class AuthService {
   ) {}
 
   async login(userDto: CreateUserDto): Promise<IAuth> {
-    console.log(userDto);
-    const user = await this.validateUser(userDto);
-    const tokens = await this.generateTokens(user);
-    await this.tokensService.saveToken(user._id, tokens.refreshToken);
-    return {
-      token: tokens,
-      user: dumpUser(user),
-    };
+    try {
+      const user = await this.validateUser(userDto);
+      const tokens = await this.generateTokens(user);
+      await this.tokensService.saveToken(user._id, tokens.refreshToken);
+      return {
+        token: tokens,
+        user: dumpUser(user),
+     };
+    } catch (e) {
+      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+    }
   }
 
   async registration(userDto: CreateUserDto): Promise<IAuth> {
-    const canditate = await this.userService.getUserByEmailAuth(userDto.email);
-    if (canditate) {
-      throw new HttpException(this.EXIST_EMAIL_ERROR, HttpStatus.BAD_REQUEST);
-    }
-    const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
+    try {
+      const canditate = await this.userService.getUserByEmailAuth(userDto.email);
+      if (canditate) {
+        throw new HttpException(this.EXIST_EMAIL_ERROR, HttpStatus.BAD_REQUEST);
+      }
+      const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
 
-    const activationLink = uuidv4();
-    await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
-    const user = await this.userService.getUserByEmailAuth(userDto.email);
-    await this.mailService.sendActivationMail(userDto.email, `${process.env.API_URL}/auth/activate/${activationLink}`);
-    const tokens = await this.generateTokens(user);
-    await this.tokensService.saveToken(user._id, tokens.refreshToken);
-    return {
-      token: tokens,
-      user: dumpUser(user),
-    };
+      const activationLink = uuidv4();
+      await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
+      const user = await this.userService.getUserByEmailAuth(userDto.email);
+      await this.mailService.sendActivationMail(userDto.email, `${process.env.API_URL}/auth/activate/${activationLink}`);
+      const tokens = await this.generateTokens(user);
+      await this.tokensService.saveToken(user._id, tokens.refreshToken);
+      return {
+        token: tokens,
+        user: dumpUser(user),
+      };
+    } catch (e) {
+      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+    }
+    
   }
 
   async activate(activationLink: string): Promise<void> {
     const user = await this.userService.getUserByActivationLink(activationLink);
     if (!user) {
-      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(this.WRONG_ACTIVLINK, HttpStatus.UNAUTHORIZED);
     }
     user.isActivated = true;
     await user.save();
@@ -103,16 +117,11 @@ export class AuthService {
   }
 
   async validateUser(userDto: CreateUserDto): Promise<UserDocument> {
-    console.log(userDto);
     const user = await this.userService.getUserByEmailAuth(userDto.email);
     if (!user) {
-      console.log('1');
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
-    console.log(userDto.password);
-    console.log(user.password);
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-    console.log(passwordEquals);
     if (!passwordEquals) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }

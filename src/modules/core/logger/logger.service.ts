@@ -12,8 +12,6 @@ export class LoggerService {
     if (this.prefix) {
       formattedMessage = `[${this.prefix}] ${message}`;
     }
-
-    console.log(formattedMessage);
   }
 
   setPrefix(prefix: string) {

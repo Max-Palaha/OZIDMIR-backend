@@ -13,7 +13,6 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const authHeader = req.headers.authorization;
-      console.log(authHeader);
       const [bearer, token] = authHeader.split(' ');
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({ message: this.userUnauthorized });
@@ -24,7 +23,6 @@ export class JwtAuthGuard implements CanActivate {
 
       return user;
     } catch (e) {
-      console.log(e);
       throw new UnauthorizedException({ message: this.userUnauthorized });
     }
   }

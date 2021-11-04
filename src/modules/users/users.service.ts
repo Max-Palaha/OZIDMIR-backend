@@ -16,7 +16,6 @@ export class UsersService {
       const user = await this.userModel.create({
         ...createUserDto,
         roles: [role.id],
-        activationLink: createUserDto.activationLink,
       });
 
       await user.save();

@@ -42,7 +42,7 @@ export class MailService {
         context,
       });
     } catch (error) {
-      console.log('error', error);
+      throw new HttpException(error, HttpStatus.UNAUTHORIZED);
     }
   }
 
