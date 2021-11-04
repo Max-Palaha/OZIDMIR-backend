@@ -1,9 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create.user.dto';
 import { dumpUser } from './dump';
-import { IUser } from './interfaces';
+import { IUser, IUserCreate } from './interfaces';
 import { User, UserDocument } from './schemas/user.schema';
 import { RoleService } from '../role/role.service';
 
@@ -11,7 +10,7 @@ import { RoleService } from '../role/role.service';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private roleService: RoleService) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<boolean> {
+  async createUser(createUserDto: IUserCreate): Promise<boolean> {
     try {
       const role = await this.roleService.getRoleByName('USER');
       const user = await this.userModel.create({
@@ -35,6 +34,12 @@ export class UsersService {
 
   async getUserByEmailAuth(email: string) {
     const user = await this.userModel.findOne({ email }).populate('roles').lean();
+
+    return user;
+  }
+
+  async getUserByActivationLink(activationLink: string) {
+    const user = await this.userModel.findOne({ activationLink });
 
     return user;
   }

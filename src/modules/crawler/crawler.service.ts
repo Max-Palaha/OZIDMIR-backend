@@ -28,7 +28,6 @@ export class CrawlerService {
     const { continents }: IScrapeContinents = await this.worldPopService.scrapePageContinents();
 
     const count = await this.continentService.countContinents();
-    console.log(count);
     if (!count) {
       await this.continentService.createContinents(continents);
     }

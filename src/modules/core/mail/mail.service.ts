@@ -8,6 +8,8 @@ export class MailService {
   // sendUserResetPassword
   private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
   private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
+  private readonly ACTIVATION_MAIL_SUBJECT = 'Activation account by mail';
+  private readonly ACTIVATION_MAIL_PATH = './templates/activationMail';
   private readonly DEFAULT_USER = 'OZIMIDR user';
 
   constructor(private mailerService: MailerService) {}
@@ -28,11 +30,27 @@ export class MailService {
     });
   }
 
+  async sendActivationMail(to: string, link: string): Promise<void> {
+    const context = {
+      link,
+    };
+    try {
+      await this.send({
+        to,
+        subject: this.ACTIVATION_MAIL_SUBJECT,
+        template: this.ACTIVATION_MAIL_PATH,
+        context,
+      });
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.UNAUTHORIZED);
+    }
+  }
+
   private async send({ context, template, to, subject }: ISendMail): Promise<void> {
     try {
       await this.mailerService.sendMail({
         to,
-        from: process.env.DEFAULT_APP_EMAIL,
+        from: process.env.SMTP_EMAIL,
         subject,
         template,
         context,
