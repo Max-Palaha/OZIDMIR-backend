@@ -24,7 +24,6 @@ export class AuthService {
   // refresh token
   private readonly WRONG_REFRESH = 'Wrong REFRESH';
 
-
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
@@ -40,7 +39,7 @@ export class AuthService {
       return {
         token: tokens,
         user: dumpUser(user),
-     };
+      };
     } catch (e) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
@@ -57,7 +56,10 @@ export class AuthService {
       const activationLink = uuidv4();
       await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
       const user = await this.userService.getUserByEmailAuth(userDto.email);
-      await this.mailService.sendActivationMail(userDto.email, `${process.env.API_URL}/auth/activate/${activationLink}`);
+      await this.mailService.sendActivationMail(
+        userDto.email,
+        `${process.env.API_URL}/auth/activate/${activationLink}`,
+      );
       const tokens = await this.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
@@ -67,7 +69,6 @@ export class AuthService {
     } catch (e) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
-    
   }
 
   async activate(activationLink: string): Promise<void> {

@@ -10,8 +10,7 @@ import { Response, Request } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService, private mailService: MailService) {}
-  
-  // tokens lifetime 
+  // tokens lifetime
   private readonly MONTH_IN_SECONDS = 30 * 24 * 60 * 60 * 1000;
 
   // something
