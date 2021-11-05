@@ -30,6 +30,14 @@ export class User {
   @Prop({ type: String, required: true })
   password: string;
 
+  @ApiProperty({ example: 'isActivated', description: 'Activated account' })
+  @Prop({ type: Boolean, default: false })
+  isActivated: boolean;
+
+  @ApiProperty({ example: 'Link', description: 'Activation Link' })
+  @Prop({ type: String })
+  activationLink: string;
+
   @ApiProperty({ example: '/path/id/user', description: 'path of avatar' })
   @Prop({ type: String })
   avatar: string;
