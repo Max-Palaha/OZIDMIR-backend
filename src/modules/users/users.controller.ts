@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/helpers/jwt-auth.guard';
 import { Roles } from 'src/helpers/roles-auth.decorator';
@@ -26,5 +27,14 @@ export class UsersController {
   @Post()
   create(@Body() userDto: CreateUserDto) {
     return this.usersService.createUser(userDto);
+  }
+
+  @ApiOperation({ summary: 'upload photo' })
+  @ApiResponse({ status: 200 })
+  @Patch('/upload/photo')
+  @UseGuards(RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  uploadPhoto(@Req() request: Request & { user: IUser }, @UploadedFile() file: Express.Multer.File) {
+    return this.usersService.uploadPhoto(file, request.user);
   }
 }
