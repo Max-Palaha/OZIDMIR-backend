@@ -98,7 +98,7 @@ export class AuthService {
   }
 
   async generateTokens(user: IUser): Promise<IToken> {
-    const accessToken = this.jwtService.sign(user, { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '60m' });
+    const accessToken = this.jwtService.sign(user, { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '30m' });
     const refreshToken = this.jwtService.sign(user, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '30d' });
     return {
       accessToken,

@@ -80,8 +80,7 @@ export class UsersService {
 
   async uploadPhoto(file: Express.Multer.File, user: IUser) {
     const { id } = user;
-    const avatar = 'ddd';
-    await this.s3Service.uploadImage(file.buffer, 'profile', id);
+    const avatar = await this.s3Service.uploadImage(file.buffer, 'profile', id);
     await this.updateUser({ _id: id }, { avatar });
   }
 }

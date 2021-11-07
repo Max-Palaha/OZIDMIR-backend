@@ -91,7 +91,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'User resetPass' })
   @ApiResponse({ status: 200, type: AuthDto })
-  @Put('/resetPass')
+  @Put('/reset/password')
   resetPass() {
     return this.mailService.sendUserConfirmation();
   }

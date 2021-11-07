@@ -11,7 +11,7 @@ export class S3Service {
     try {
       const fileName = uuid();
       const params = {
-        Bucket: `${process.env.AWS_BUCKET}`,
+        Bucket: `${process.env.AWS_BUCKET}-${process.env.NODE_ENV}`,
         Body: file,
         Key: `${folder}/${subfolder}/${fileName}.jpg`,
       };
