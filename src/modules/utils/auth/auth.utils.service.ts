@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from 'src/modules/users/dto/create.user.dto';
-import { UsersService } from 'src/modules/users/users.service';
+import { CreateUserDto } from '../../users/dto/create.user.dto';
+import { UsersService } from '../../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { UserDocument } from '../../users/schemas/user.schema';
 import { IToken } from '../../auth/interfaces';
@@ -9,14 +9,10 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthServiceUtils {
-
   // validateUser
   private readonly WRONG_AUTH = 'Wrong email or password';
 
-  constructor(
-    private jwtService: JwtService,
-    private userService: UsersService,
-  ) {}
+  constructor(private jwtService: JwtService, private userService: UsersService) {}
 
   async generateTokens(user: UserDocument): Promise<IToken> {
     const payload = dumpUser(user);

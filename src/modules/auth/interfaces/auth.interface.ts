@@ -1,4 +1,4 @@
-import { IUser } from 'src/modules/users/interfaces';
+import { IUser } from '../../users/interfaces';
 import { IToken } from '.';
 
 export type IAuth = {

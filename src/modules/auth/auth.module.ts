@@ -1,5 +1,5 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { UsersModule } from 'src/modules/users/users.module';
+import { Module } from '@nestjs/common';
+import { UsersModule } from '../users/users.module';
 import { RoleModule } from '../role/role.module';
 import { MailModule } from '../core/mail/mail.module';
 import { AuthController } from './auth.controller';
@@ -16,7 +16,7 @@ import { AuthUtilsModule } from '../utils/auth/auth.utils.module';
     AuthUtilsModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     TokensModule,
-    forwardRef(() => UsersModule),
+    UsersModule,
     RoleModule,
     MailModule,
   ],
