@@ -7,9 +7,9 @@ import { AuthServiceUtils } from './auth.utils.service';
   imports: [
     forwardRef(() => UsersModule),
     JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'SECRET',
+      secret: process.env.JWT_ACCESS_SECRET,
       signOptions: {
-        expiresIn: '30d',
+        expiresIn: '30m',
       },
     }),
   ],
