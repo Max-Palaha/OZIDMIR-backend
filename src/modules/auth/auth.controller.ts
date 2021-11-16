@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/modules/users/dto';
+import { CreateUserDto } from '../users/dto';
 import { AuthService } from './auth.service';
 import { AuthDto, ParamActivationLinkDto } from './dto';
 import { MailService } from '../core/mail/mail.service';
@@ -55,6 +55,7 @@ export class AuthController {
     try {
       const activationLink = params.activationLink;
       await this.authService.activate(activationLink);
+      console.log("activate log");
     } catch (error) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }

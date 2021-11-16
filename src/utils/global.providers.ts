@@ -1,6 +1,6 @@
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { HttpErrorFilter } from 'src/helpers/http-error.filter';
-import { LoggerInterceptor } from 'src/helpers/logger.interceptor';
+import { HttpErrorFilter } from '../helpers/http-error.filter';
+import { LoggerInterceptor } from '../helpers/logger.interceptor';
 
 export const LoggerInterceptorProvider = {
   provide: APP_INTERCEPTOR,

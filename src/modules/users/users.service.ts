@@ -26,7 +26,7 @@ export class UsersService {
 
       await user.save();
 
-      return this.getUserByEmail(createUserDto.email);
+      return dumpUser(await this.getUserByEmail(createUserDto.email));
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -44,14 +44,14 @@ export class UsersService {
     return user.password;
   }
 
-  async getUserByEmail(email: string): Promise<IUser> {
+  async getUserByEmail(email: string): Promise<UserDocument> {
     const user = await this.userModel.findOne({ email }).populate('roles').lean();
 
     if (!user) {
       throw new HttpException(this.USER_NOT_EXIST, HttpStatus.NOT_FOUND);
     }
 
-    return dumpUser(user);
+    return user;
   }
 
   async checkExistUserByEmail(email: string): Promise<boolean> {
