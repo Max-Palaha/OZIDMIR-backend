@@ -24,17 +24,12 @@ export class AuthServiceUtils {
     };
   }
 
-  async validateUser(userDto: CreateUserDto): Promise<UserDocument> {
-    const user = await this.userService.getUserByEmailAuth(userDto.email);
-    if (!user) {
-      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
-    }
-    const passwordEquals = await bcrypt.compare(userDto.password, user.password);
+  async validateUser(userDto: CreateUserDto): Promise<void> {
+    const password = await this.userService.getUserPassword(userDto.email);
+    const passwordEquals = await bcrypt.compare(userDto.password, password);
     if (!passwordEquals) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
-
-    return user;
   }
 
   validateAccessToken(token: string) {

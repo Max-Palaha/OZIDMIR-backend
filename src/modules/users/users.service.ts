@@ -5,12 +5,18 @@ import { dumpUser } from './dump';
 import { IUser, IUserCreate } from './interfaces';
 import { User, UserDocument } from './schemas/user.schema';
 import { RoleService } from '../role/role.service';
+import { S3Service } from '../core/s3/s3.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private roleService: RoleService) {}
+  private readonly USER_NOT_EXIST = 'User not exist';
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private roleService: RoleService,
+    private s3Service: S3Service,
+  ) {}
 
-  async createUser(createUserDto: IUserCreate): Promise<boolean> {
+  async createUser(createUserDto: IUserCreate): Promise<IUser> {
     try {
       const role = await this.roleService.getRoleByName('USER');
       const user = await this.userModel.create({
@@ -20,7 +26,7 @@ export class UsersService {
 
       await user.save();
 
-      return true;
+      return dumpUser(await this.getUserByEmail(createUserDto.email));
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -32,15 +38,49 @@ export class UsersService {
     return users.map(dumpUser);
   }
 
-  async getUserByEmailAuth(email: string) {
+  async getUserPassword(email: string): Promise<string> {
+    const user = await this.userModel.findOne({ email }).select('password').lean();
+
+    return user.password;
+  }
+
+  async getUserByEmail(email: string): Promise<UserDocument> {
     const user = await this.userModel.findOne({ email }).populate('roles').lean();
+
+    if (!user) {
+      throw new HttpException(this.USER_NOT_EXIST, HttpStatus.NOT_FOUND);
+    }
 
     return user;
   }
 
-  async getUserByActivationLink(activationLink: string) {
+  async checkExistUserByEmail(email: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ email }).select('email').lean();
+
+    if (!user) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async getUserByActivationLink(activationLink: string): Promise<IUser> {
     const user = await this.userModel.findOne({ activationLink });
 
-    return user;
+    return dumpUser(user);
+  }
+
+  async updateUser(updatedFileds, fieldsBySearch) {
+    try {
+      await this.userModel.updateOne(fieldsBySearch, updatedFileds);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async uploadPhoto(file: Express.Multer.File, user: IUser) {
+    const { id } = user;
+    const avatar = await this.s3Service.uploadImage(file.buffer, 'profile', id);
+    await this.updateUser({ _id: id }, { avatar });
   }
 }

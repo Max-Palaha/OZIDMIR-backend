@@ -55,6 +55,7 @@ export class AuthController {
     try {
       const activationLink = params.activationLink;
       await this.authService.activate(activationLink);
+      console.log("activate log");
     } catch (error) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
@@ -91,7 +92,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'User resetPass' })
   @ApiResponse({ status: 200, type: AuthDto })
-  @Put('/resetPass')
+  @Put('/reset/password')
   resetPass() {
     return this.mailService.sendUserConfirmation();
   }

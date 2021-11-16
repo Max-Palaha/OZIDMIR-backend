@@ -13,7 +13,7 @@ import { ROLES_KEY } from './roles-auth.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  private userUnauthorized = 'Ця роль не має доступу';
+  private USER_UNAUTHORIZED = 'User not authorized';
 
   constructor(private jwtService: JwtService, private reflector: Reflector) {}
 
@@ -23,19 +23,23 @@ export class RolesGuard implements CanActivate {
         context.getHandler(),
         context.getClass(),
       ]);
+      const req = context.switchToHttp().getRequest();
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader) {
+        throw new UnauthorizedException({ message: this.USER_UNAUTHORIZED });
+      }
+
+      const [bearer, token] = authHeader.split(' ');
+      if (bearer !== 'Bearer' || !token) {
+        throw new UnauthorizedException({ message: this.USER_UNAUTHORIZED });
+      }
+      const user = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
+      req.user = user;
+
       if (!requiredRoles) {
         return true;
       }
-      const req = context.switchToHttp().getRequest();
-      const authHeader = req.headers.authorization;
-      const [bearer, token] = authHeader.split(' ');
-
-      if (bearer !== 'Bearer' || !token) {
-        throw new UnauthorizedException({ message: this.userUnauthorized });
-      }
-
-      const user = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
-      req.user = user;
 
       return user.roles.some((role: string) => requiredRoles.includes(role));
     } catch (e) {
