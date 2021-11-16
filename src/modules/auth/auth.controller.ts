@@ -55,7 +55,6 @@ export class AuthController {
     try {
       const activationLink = params.activationLink;
       await this.authService.activate(activationLink);
-      console.log("activate log");
     } catch (error) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }

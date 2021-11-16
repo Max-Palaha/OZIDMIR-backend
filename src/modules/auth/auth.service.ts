@@ -9,8 +9,6 @@ import { dumpUser } from '../users/dump';
 import { AuthServiceUtils } from '../utils/auth/auth.utils.service';
 import { IAuth } from './interfaces';
 
-
-
 @Injectable()
 export class AuthService {
   // registration
@@ -73,7 +71,6 @@ export class AuthService {
 
   async activate(activationLink: string): Promise<void> {
     await this.userService.updateUser({ activationLink }, { isActivated: true });
-    console.log('function activate done');
   }
 
   async refresh(refreshToken) {
