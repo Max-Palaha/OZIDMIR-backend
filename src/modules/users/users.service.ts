@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { dumpUser } from './dump';
-import { IUser, IUserCreate } from './interfaces';
+import { IUser, IUserCreate, IUserSearch, IUserUpdatedFields } from './interfaces';
 import { User, UserDocument } from './schemas/user.schema';
 import { RoleService } from '../role/role.service';
 import { S3Service } from '../core/s3/s3.service';
@@ -70,7 +70,7 @@ export class UsersService {
     return dumpUser(user);
   }
 
-  async updateUser(updatedFileds, fieldsBySearch) {
+  async updateUser(fieldsBySearch: IUserSearch, updatedFileds: IUserUpdatedFields) {
     try {
       await this.userModel.updateOne(fieldsBySearch, updatedFileds);
     } catch (error) {
