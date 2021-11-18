@@ -18,6 +18,12 @@ export class CrawlerService {
     return true;
   }
 
+  async scrapeContentByName(country: string) {
+    await this.numbeoService.scrapeContentCountry(country);
+    
+    return true;
+  }
+
   async scrapeCountry(continent: string): Promise<ICountries[]> {
     const { countries }: IScrapeCountries = await this.worldPopService.scrapeCountryByContinent(continent);
 
