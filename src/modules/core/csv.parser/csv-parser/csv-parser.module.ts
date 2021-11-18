@@ -5,5 +5,6 @@ import { CsvParserController } from './csv-parser.controller';
 @Module({
   providers: [CsvParserService],
   controllers: [CsvParserController],
+  exports: [CsvParserService],
 })
 export class CsvParserModule {}

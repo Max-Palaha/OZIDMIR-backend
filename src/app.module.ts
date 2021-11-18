@@ -9,6 +9,7 @@ import { MailModule } from './modules/core/mail/mail.module';
 import { TokensModule } from './modules/tokens/tokens.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
 import { S3, SharedIniFileCredentials } from 'aws-sdk';
+import { CsvParserModule } from './modules/core/csv.parser/csv-parser/csv-parser.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { S3, SharedIniFileCredentials } from 'aws-sdk';
     UsersModule,
     CrawlerModule,
     AuthModule,
+    CsvParserModule,
     RoleModule,
     MailModule,
     TokensModule,
