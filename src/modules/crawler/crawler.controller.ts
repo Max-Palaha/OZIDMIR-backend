@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../auth/roles-auth.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../utils/auth/helpers/roles-auth.decorator';
+import { RolesGuard } from '../utils/auth/helpers/roles.guard';
 import { CrawlerService } from './crawler.service';
 import { ScrapeCountryDto } from './dto/scrape.country.dto';
 import { ScrapeDto } from './dto/scrape.crawler.dto';

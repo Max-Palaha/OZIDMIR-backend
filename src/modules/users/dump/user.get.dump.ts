@@ -3,9 +3,10 @@ import { UserDocument } from '../schemas/user.schema';
 
 export default (user: UserDocument): IUser => {
   return {
-    id: user._id.toString(),
+    id: user._id,
     roles: user.roles && user.roles.map((role) => role.name),
     email: user.email,
+    isActivated: user.isActivated,
     firstName: user.firstName,
     lastName: user.lastName,
     userName: user.userName,

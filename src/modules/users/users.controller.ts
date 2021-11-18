@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../auth/roles-auth.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { JwtAuthGuard } from '../utils/auth/helpers/jwt-auth.guard';
+import { Roles } from '../utils/auth/helpers/roles-auth.decorator';
+import { RolesGuard } from '../utils/auth/helpers/roles.guard';
 import { CreateUserDto, UserDto } from './dto';
 import { IUser } from './interfaces';
 import { UsersService } from './users.service';
@@ -13,8 +15,8 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [UserDto] })
-  @Roles('ADMIN')
-  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Get()
   getAll(): Promise<IUser[]> {
     return this.usersService.getUsers();
@@ -25,5 +27,14 @@ export class UsersController {
   @Post()
   create(@Body() userDto: CreateUserDto) {
     return this.usersService.createUser(userDto);
+  }
+
+  @ApiOperation({ summary: 'upload photo' })
+  @ApiResponse({ status: 200 })
+  @Patch('/upload/photo')
+  @UseGuards(RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  uploadPhoto(@Req() request: Request & { user: IUser }, @UploadedFile() file: Express.Multer.File) {
+    return this.usersService.uploadPhoto(file, request.user);
   }
 }

@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/modules/users/dto/create.user.dto';
-import { UsersService } from 'src/modules/users/users.service';
+import { CreateUserDto } from '../users/dto/create.user.dto';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { UserDocument } from '../users/schemas/user.schema';
+import { v4 as uuidv4 } from 'uuid';
+import { MailService } from '../core/mail/mail.service';
+import { TokensService } from '../tokens/tokens.service';
 import { dumpUser } from '../users/dump';
+import { AuthServiceUtils } from '../utils/auth/auth.utils.service';
 import { IAuth } from './interfaces';
 
 @Injectable()
@@ -15,44 +17,85 @@ export class AuthService {
 
   // validateUser
   private readonly WRONG_AUTH = 'Wrong email or password';
-  constructor(private userService: UsersService, private jwtService: JwtService) {}
+
+  // refresh token
+  private readonly WRONG_REFRESH = 'Wrong REFRESH';
+
+  constructor(
+    private userService: UsersService,
+    private mailService: MailService,
+    private tokensService: TokensService,
+    private authServiceUtils: AuthServiceUtils,
+  ) {}
 
   async login(userDto: CreateUserDto): Promise<IAuth> {
-    const user = await this.validateUser(userDto);
-    return this.generateToken(user);
+    try {
+      await this.authServiceUtils.validateUser(userDto);
+      const user = await this.userService.getUserByEmail(userDto.email);
+      const tokens = await this.authServiceUtils.generateTokens(user);
+      await this.tokensService.saveToken(user._id, tokens.refreshToken);
+      return {
+        token: tokens,
+        user: dumpUser(user),
+      };
+    } catch (e) {
+      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+    }
   }
 
   async registration(userDto: CreateUserDto): Promise<IAuth> {
-    const canditate = await this.userService.getUserByEmailAuth(userDto.email);
-    if (canditate) {
-      throw new HttpException(this.EXIST_EMAIL_ERROR, HttpStatus.BAD_REQUEST);
-    }
-    const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
-    await this.userService.createUser({ ...userDto, password: hashPassword });
-    const user = await this.userService.getUserByEmailAuth(userDto.email);
+    try {
+      const isExistUser = await this.userService.checkExistUserByEmail(userDto.email);
+      if (isExistUser) {
+        throw new HttpException(this.EXIST_EMAIL_ERROR, HttpStatus.BAD_REQUEST);
+      }
+      const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
 
-    return this.generateToken(user);
+      const activationLink = uuidv4();
+      await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
+      const user = await this.userService.getUserByEmail(userDto.email);
+      await this.mailService.sendActivationMail(
+        userDto.email,
+        `${process.env.API_URL}/auth/activate/${activationLink}`,
+      );
+      const tokens = await this.authServiceUtils.generateTokens(user);
+      await this.tokensService.saveToken(user._id, tokens.refreshToken);
+      return {
+        token: tokens,
+        user: dumpUser(user),
+      };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  private async generateToken(user: UserDocument): Promise<IAuth> {
-    const payload = dumpUser(user);
+  async activate(activationLink: string): Promise<void> {
+    await this.userService.updateUser({ activationLink }, { isActivated: true });
+  }
 
+  async refresh(refreshToken) {
+    if (!refreshToken) {
+      throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
+    }
+
+    const userData = this.authServiceUtils.validateRefreshToken(refreshToken);
+    const tokenFromDb = await this.tokensService.findToken(refreshToken);
+
+    if (!userData || !tokenFromDb) {
+      throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
+    }
+
+    const user = await this.userService.getUserByEmail(userData.email);
+    const tokens = await this.authServiceUtils.generateTokens(user);
+    await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
-      token: this.jwtService.sign(payload),
-      user: payload,
+      token: tokens,
+      user: user,
     };
   }
 
-  private async validateUser(userDto: CreateUserDto): Promise<UserDocument> {
-    const user = await this.userService.getUserByEmailAuth(userDto.email);
-    if (!user) {
-      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
-    }
-    const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-    if (!passwordEquals) {
-      throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
-    }
-
-    return user;
+  async logout(refreshToken) {
+    const token = await this.tokensService.removeToken(refreshToken);
+    return token;
   }
 }

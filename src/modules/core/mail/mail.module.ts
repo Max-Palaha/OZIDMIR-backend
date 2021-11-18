@@ -2,30 +2,32 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
-import { join } from 'path';
+import * as path from 'path';
 
 @Module({
   imports: [
-    MailerModule.forRoot({
-      transport: {
-        port: process.env.MAILER_PORT,
-        host: process.env.MAILER_HOST,
-        secure: false,
-        auth: {
-          user: process.env.DEFAULT_APP_EMAIL,
-          pass: process.env.MAILER_PASSWORD,
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: process.env.SMTP_HOST,
+          port: +process.env.SMTP_PORT,
+          secure: false,
+          auth: {
+            user: process.env.SMTP_EMAIL,
+            pass: process.env.SMTP_PASSWORD,
+          },
         },
-      },
-      defaults: {
-        from: process.env.DEFAULT_NAME_APP,
-      },
-      template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
+        defaults: {
+          from: process.env.SMTP_EMAIL,
         },
-      },
+        template: {
+          dir: path.join(__dirname, 'templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
     }),
   ],
   providers: [MailService],

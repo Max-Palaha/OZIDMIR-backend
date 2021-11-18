@@ -1,26 +1,25 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { UsersModule } from 'src/modules/users/users.module';
+import { Module } from '@nestjs/common';
+import { UsersModule } from '../users/users.module';
 import { RoleModule } from '../role/role.module';
 import { MailModule } from '../core/mail/mail.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { TokensModule } from '../tokens/tokens.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from '../users/schemas/user.schema';
+import { AuthUtilsModule } from '../utils/auth/auth.utils.module';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
   imports: [
-    forwardRef(() => UsersModule),
-    RoleModule,
+    AuthUtilsModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    TokensModule,
     UsersModule,
+    RoleModule,
     MailModule,
-    JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'SECRET',
-      signOptions: {
-        expiresIn: '24h',
-      },
-    }),
   ],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService],
 })
 export class AuthModule {}

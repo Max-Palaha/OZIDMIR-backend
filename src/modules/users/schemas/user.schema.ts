@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import * as mongoose from 'mongoose';
-import { Role } from 'src/modules/role/schemas/role.schema';
+import { Role } from '../../role/schemas/role.schema';
 
 export type UserDocument = User & Document;
 
@@ -29,6 +29,14 @@ export class User {
   @ApiProperty({ example: 'hash password', description: 'hash password' })
   @Prop({ type: String, required: true })
   password: string;
+
+  @ApiProperty({ example: 'isActivated', description: 'Activated account' })
+  @Prop({ type: Boolean, default: false })
+  isActivated: boolean;
+
+  @ApiProperty({ example: 'Link', description: 'Activation Link' })
+  @Prop({ type: String })
+  activationLink: string;
 
   @ApiProperty({ example: '/path/id/user', description: 'path of avatar' })
   @Prop({ type: String })

@@ -1,7 +1,10 @@
+import { ObjectId } from 'mongoose';
+
 export type IUser = {
-  id: string;
+  id: ObjectId;
   roles: string[];
   email: string;
+  isActivated: boolean;
   userName: string;
   firstName?: string;
   lastName?: string;
