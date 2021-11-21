@@ -4,10 +4,19 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from './utils/validation.pipe';
 import * as cookieParser from 'cookie-parser';
+import { SocketAdapter } from './helpers/socket.adapter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
   const PORT = process.env.PORT || 3000;
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
+
+  app.useWebSocketAdapter(new SocketAdapter(app));
+  app.use(cookieParser());
+  app.enableCors({ origin: true });
+  app.useGlobalPipes(new ValidationPipe());
+
   const config = new DocumentBuilder()
     .setTitle('Country info')
     .setDescription('information about all countries')
@@ -16,10 +25,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  app.use(cookieParser());
-  app.enableCors({ origin: true });
   SwaggerModule.setup('api/docs', app, document);
-  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(PORT, () => Logger.log(`Server has run on ${PORT} port`));
 }

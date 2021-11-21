@@ -9,6 +9,7 @@ import { MailModule } from './modules/core/mail/mail.module';
 import { TokensModule } from './modules/tokens/tokens.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
 import { S3, SharedIniFileCredentials } from 'aws-sdk';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -30,6 +31,6 @@ import { S3, SharedIniFileCredentials } from 'aws-sdk';
     }),
   ],
   controllers: [],
-  providers: [LoggerInterceptorProvider, HttpErrorFilterProvider],
+  providers: [EventsModule, LoggerInterceptorProvider, HttpErrorFilterProvider],
 })
 export class AppModule {}
