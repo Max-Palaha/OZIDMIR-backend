@@ -1,0 +1,1 @@
+export { ICountriesNumbeo } from './countries.interface'

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ElementHandle, Page } from 'puppeteer';
 import { CrawlerServiceUtils } from '../../crawler/crawler.utils.service';
+import { ICountriesNumbeo } from './interfaces';
 
 @Injectable()
 export class SiteNumbeoService {
@@ -25,25 +26,37 @@ export class SiteNumbeoService {
   async scrapeContentCountry(country: string) {
     const page = await this.scrapePageCountry(country);
     try {
-      const dataAllTable = await page.$$eval(this.DATA_WIDE_TABLE, (els) => els.map((el) => el.textContent));
-      const categoryTitle = await page.$$eval(this.CATEGORY_TITLE, (els) => els.map((el) => el.innerHTML));
-      console.log(categoryTitle);
-      console.log('!!!!!!!!!!!!!!!!!!!!!');
-      console.log(dataAllTable);
+      const dataAllTable = await page.$$eval(this.DATA_WIDE_TABLE, (els) => els.map((el) => {
+        if (el.getElementsByTagName('th').length) {
+          return el.querySelector('div').innerHTML; 
+        } else {
+          const productName = el.querySelector('td').innerHTML;
+          const productPrice = el.querySelector('td').nextElementSibling.textContent;
+          return {
+            name: productName,
+            price: productPrice
+          }
+        }
+      }));
+
+      const dataTable = [];
+      let nameHeader;
+      for (let i in dataAllTable) {
+        if (typeof dataAllTable[i] === 'string') {
+          nameHeader = dataAllTable[i];
+          dataTable[nameHeader] = [];
+        } else {
+          dataTable[nameHeader].push(dataAllTable[i])
+        }
+      }      
+      console.log(dataTable);
       
+      return dataTable;
 
     } catch (e) {
-      //await this.crawlerServiceUtil.closePage(page);
+      await this.crawlerServiceUtil.closePage(page);
       console.log(e);
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return true;
   }
-
-  // function name(el) {
-  //   if (!el.getElementsByTagName('th').lenght) {
-      
-  //   }
-  //}
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Token } from 'src/modules/tokens/schemas/token.schema';
-import { User } from 'src/modules/users/schemas/user.schema';
+import { Token } from '../../tokens/schemas/token.schema';
+import { User } from '../../users/schemas/user.schema';
 
 export class AuthDto {
   @ApiProperty({ example: 'token', description: 'jwt token' })
