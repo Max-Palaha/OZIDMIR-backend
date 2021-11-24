@@ -9,7 +9,8 @@ import { MailModule } from './modules/core/mail/mail.module';
 import { TokensModule } from './modules/tokens/tokens.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
 import { S3, SharedIniFileCredentials } from 'aws-sdk';
-import { CsvParserModule } from './modules/core/csv.parser/csv-parser/csv-parser.module';
+import { CsvParserModule } from './modules/core/csv-parser/csv-parser.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { CsvParserModule } from './modules/core/csv.parser/csv-parser/csv-parser
     }),
   ],
   controllers: [],
-  providers: [LoggerInterceptorProvider, HttpErrorFilterProvider],
+  providers: [EventsModule, LoggerInterceptorProvider, HttpErrorFilterProvider],
 })
 export class AppModule {}
