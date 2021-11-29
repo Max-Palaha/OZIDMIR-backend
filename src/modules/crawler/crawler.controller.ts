@@ -4,6 +4,7 @@ import { Roles } from '../utils/auth/helpers/roles-auth.decorator';
 import { RolesGuard } from '../utils/auth/helpers/roles.guard';
 import { CrawlerService } from './crawler.service';
 import { ScrapeCountryDto } from './dto/scrape.country.dto';
+import { ScrapeCityDto } from './dto/scrape.city.dto';
 import { ScrapeDto } from './dto/scrape.crawler.dto';
 
 @ApiTags('Crawler')
@@ -39,5 +40,16 @@ export class CrawlerController {
     const { continent } = scrapeDto;
 
     return this.crawlerService.scrapeCountry(continent);
+  }
+
+  @ApiOperation({ summary: 'scrape city by country' })
+  @ApiResponse({ status: 200 })
+  @Roles('ADMIN')
+  // @UseGuards(RolesGuard)
+  @Post('cities')
+  scrapeCity(@Body() scrapeDto: ScrapeCityDto) {
+    const { country } = scrapeDto;
+
+    return this.crawlerService.scrapeCities(country);
   }
 }

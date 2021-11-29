@@ -48,4 +48,8 @@ export class CrawlerService {
 
     return continents;
   }
+  async scrapeCities(countryName: string): Promise<string[]> {
+    const cities = await this.numbeoService.scrapeAllCitiesByCountry(countryName);
+    return cities;
+  }
 }
