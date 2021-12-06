@@ -6,11 +6,11 @@ import { IScrapeCountries, IScrapeContinents, ICountries } from './interfaces';
 @Injectable()
 export class SiteWorldPopService {
   private readonly SITE_URL = 'https://worldpopulationreview.com/';
-  private readonly LOCL = 1; // location of continent link
-  private readonly CONTINENT_LIST = 0;
-  private readonly NAVIGATION_ID = '#main-nav a';
-  private readonly CONTINENTS_LISTS_ID = '.content ul';
-  private readonly CONTINENT_NAMES_ID = 'li a';
+  private readonly LOCL = 0; // location of continent link
+  private readonly CONTINENT_LIST = 6;
+  private readonly NAVIGATION_ID = '#navbarNav a';
+  private readonly CONTINENTS_LISTS_ID = '.table-container tbody';
+  private readonly CONTINENT_NAMES_ID = 'tr td a';
   // country variables
   private readonly COUNTRY_TABLE_CLASS = '.table-container tbody';
   private readonly COUNTRY_RAWS = 'tr';
@@ -65,8 +65,9 @@ export class SiteWorldPopService {
   private async scrapeContinents(page: Page) {
     try {
       const mainLinks: ElementHandle[] = await page.$$(this.NAVIGATION_ID);
-      const continentLink = Array.from(mainLinks)[this.LOCL];
 
+      const continentLink = Array.from(mainLinks)[this.LOCL];
+      
       await this.crawlerServiceUtil.clickHandler(page, continentLink);
 
       const contentLists = await page.$$(this.CONTINENTS_LISTS_ID);
