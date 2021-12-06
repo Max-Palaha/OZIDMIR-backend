@@ -67,7 +67,7 @@ export class SiteWorldPopService {
       const mainLinks: ElementHandle[] = await page.$$(this.NAVIGATION_ID);
 
       const continentLink = Array.from(mainLinks)[this.LOCL];
-      
+
       await this.crawlerServiceUtil.clickHandler(page, continentLink);
 
       const contentLists = await page.$$(this.CONTINENTS_LISTS_ID);
