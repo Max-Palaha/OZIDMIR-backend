@@ -7,6 +7,7 @@ import * as cookieParser from 'cookie-parser';
 import { SocketAdapter } from './helpers/socket.adapter';
 
 async function bootstrap() {
+  const whitelist = ['https://127.0.0.1:4200', 'http://localhost:4200', undefined];
   const PORT = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log'],
@@ -14,7 +15,17 @@ async function bootstrap() {
 
   app.useWebSocketAdapter(new SocketAdapter(app));
   app.use(cookieParser());
-  app.enableCors({ origin: true });
+  app.enableCors({
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
