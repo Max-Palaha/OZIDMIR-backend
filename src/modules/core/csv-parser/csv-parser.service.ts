@@ -11,19 +11,19 @@ export class CsvParserService {
     return stream;
   }
 
-  async parse(buffer) {
+  async parseCountries(buffer) {
     const stream = await this.bufferToStream(buffer);
-    const res = await this.promiceStream(stream);
-    return res;
+    const countriesData = await this.handleStream(stream);
+    return countriesData;
   }
-  async promiceStream(stream) {
-    const results = [];
+  private async handleStream(stream) {
+    const chunks = [];
     return new Promise((resolve) => {
-      const streamPromice = stream.pipe(csv()).on('data', (data) => {
-        results.push(data);
+      const streamEvent = stream.pipe(csv()).on('data', (chunk) => {
+        chunks.push(chunk);
       });
-      streamPromice.on('end', () => {
-        resolve(results);
+      streamEvent.on('end', () => {
+        resolve(chunks);
       });
     });
   }
