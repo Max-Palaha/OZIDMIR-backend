@@ -1,7 +1,7 @@
-import { ObjectId } from 'mongoose';
+import { IObjectId } from 'src/modules/core/mongoose/interfaces';
 
 export interface IRole {
-  id: ObjectId;
+  id: IObjectId;
   name: string;
   description: string;
 }

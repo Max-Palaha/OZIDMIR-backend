@@ -15,6 +15,8 @@ export class CrawlerServiceUtils {
   private readonly viewPort: Viewport;
   private readonly pageOptions: WaitForOptions;
   private browser: Browser;
+  // INPUT HANDLER
+  private readonly CONFIRM_KEYBOARD_NAME = 'Enter';
 
   constructor(@Inject('HEADLESS') headless: boolean) {
     this.pageOptions = pageOptions;
@@ -22,13 +24,15 @@ export class CrawlerServiceUtils {
     this.headless = headless;
   }
 
-  public async crawl(url: string): Promise<Page> {
+  public async crawl(url: string, isDisableImages = true): Promise<Page> {
     try {
       if (!this.browser) {
         await this.startBrowser();
       }
       const currentPage = await this.createPage(url);
-      await this.disableImages(currentPage);
+      if (isDisableImages) {
+        await this.disableImages(currentPage);
+      }
 
       return currentPage;
     } catch (error) {
@@ -84,6 +88,12 @@ export class CrawlerServiceUtils {
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  public async inputHandler(page: Page, inputValue: string, selectorName: string) {
+    await page.focus(selectorName);
+    await page.keyboard.type(inputValue);
+    await Promise.all([page.keyboard.press(this.CONFIRM_KEYBOARD_NAME), page.waitForNavigation()]);
   }
 
   private async startBrowser(): Promise<void> {

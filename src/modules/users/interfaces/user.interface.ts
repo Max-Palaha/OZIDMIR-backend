@@ -1,7 +1,7 @@
-import { ObjectId } from 'mongoose';
+import { IObjectId } from 'src/modules/core/mongoose/interfaces';
 
 export type IUser = {
-  id: ObjectId;
+  id: IObjectId;
   roles: string[];
   email: string;
   isActivated: boolean;

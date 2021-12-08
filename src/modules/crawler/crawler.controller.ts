@@ -40,4 +40,13 @@ export class CrawlerController {
 
     return this.crawlerService.scrapeCountry(continent);
   }
+
+  @ApiOperation({ summary: 'scrape country by continent' })
+  @ApiResponse({ status: 200 })
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @Post('countries/images')
+  scrapeImagesByCountries() {
+    return this.crawlerService.scrapeImagesByCountries();
+  }
 }

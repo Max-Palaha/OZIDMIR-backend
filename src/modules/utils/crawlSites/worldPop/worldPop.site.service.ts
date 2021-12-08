@@ -25,7 +25,6 @@ export class SiteWorldPopService {
 
       return continentsObj;
     } catch (error) {
-      await this.crawlerServiceUtil.closePage(page);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

@@ -25,7 +25,6 @@ export class RolesGuard implements CanActivate {
       ]);
       const req = context.switchToHttp().getRequest();
       const authHeader = req.headers.authorization;
-
       if (!authHeader) {
         throw new UnauthorizedException({ message: this.USER_UNAUTHORIZED });
       }
@@ -36,14 +35,13 @@ export class RolesGuard implements CanActivate {
       }
       const user = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
       req.user = user;
-
       if (!requiredRoles) {
         return true;
       }
 
       return user.roles.some((role: string) => requiredRoles.includes(role));
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.FORBIDDEN);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.FORBIDDEN);
     }
   }
 }

@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import * as mongoose from 'mongoose';
+import { IObjectId } from 'src/modules/core/mongoose/interfaces';
 
 export type ContinentDocument = Continent & Document;
 
 @Schema()
 export class Continent {
   @ApiProperty({ example: 'ObjectId', description: 'id' })
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: IObjectId;
 
   @ApiProperty({ example: 'Europe', description: 'name of continent' })
   @Prop({ Type: String })

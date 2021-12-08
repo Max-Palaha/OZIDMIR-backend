@@ -1,6 +1,6 @@
-import { ObjectId } from 'mongoose';
+import { IObjectId } from 'src/modules/core/mongoose/interfaces';
 
 export interface IUserSearch {
-  _id?: ObjectId;
+  _id?: IObjectId;
   activationLink?: string;
 }

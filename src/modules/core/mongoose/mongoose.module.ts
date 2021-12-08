@@ -1,10 +1,10 @@
 import { MONGO_OPTIONS } from './constants/options';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseConfig } from './interfaces/credentials.interface';
+import { IDatabaseConfig } from './interfaces';
 
 export class MongoModule {
   static async useFactory(configService: ConfigService) {
-    const { uri } = await configService.get<Promise<DatabaseConfig>>('mongo');
+    const { uri } = await configService.get<Promise<IDatabaseConfig>>('mongo');
     return {
       uri,
       ...MONGO_OPTIONS,

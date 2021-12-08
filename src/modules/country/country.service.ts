@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Country, CountryDocument } from './schemas/country.schema';
 import { Logger } from '../core/logger/helpers/logger.decorator';
 import { LoggerService } from '../core/logger/logger.service';
-import { ICountry, ICreateCountry } from './interfaces';
+import { ICountry, ICountryUpdatedFields, ICreateCountry } from './interfaces';
 import { dumpCountry } from './dump';
+import { IObjectId } from '../core/mongoose/interfaces';
 
 @Injectable()
 export class CountryService {
-  private readonly CONTINENT_EXIST_ERROR = 'Country already exist';
   constructor(
     @Logger('CountryService') private logger: LoggerService,
     @InjectModel(Country.name) private countryModel: Model<CountryDocument>,
@@ -34,7 +34,15 @@ export class CountryService {
     await createdCountry.save();
   }
 
-  async createCountries(countries: ICreateCountry[], continent: mongoose.Schema.Types.ObjectId): Promise<void> {
+  async updateCountryById(countryId: IObjectId, updatedFileds: ICountryUpdatedFields): Promise<void> {
+    try {
+      await this.countryModel.updateOne({ _id: countryId }, updatedFileds);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async createCountries(countries: ICreateCountry[], continent: IObjectId): Promise<void> {
     const countriesPromise = countries.map((country) => this.createCountry({ ...country, continent }));
 
     await Promise.all(countriesPromise);
