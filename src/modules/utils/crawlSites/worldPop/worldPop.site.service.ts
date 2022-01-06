@@ -6,13 +6,19 @@ import { IScrapeCountries, IScrapeContinents, ICountries } from './interfaces';
 @Injectable()
 export class SiteWorldPopService {
   private readonly SITE_URL = 'https://worldpopulationreview.com/';
-  private readonly LOCL = 0; // location of continent link
+  private readonly LOCL_CONTINENT = 0; // location of continent link
   private readonly CONTINENT_LIST = 6;
   private readonly NAVIGATION_ID = '#navbarNav a';
   private readonly CONTINENTS_LISTS_ID = '.table-container tbody';
   private readonly CONTINENT_NAMES_ID = 'tr td a';
   // country variables
+  private readonly LOCL_COUNTRY = 1;
+  private readonly COUNTRY_TABLE = '#popTable tbody tr';
   private readonly COUNTRY_TABLE_CLASS = '.table-container tbody';
+  private readonly COUNTRY_POPULATION = '.center';
+  private readonly COUNTRY_ROWVALUE = '.rowvalue';
+  private readonly COUNTRY_AGE = '.median-age p';
+
   private readonly COUNTRY_RAWS = 'tr';
   private readonly IC = 0; // country index of table in array
   constructor(private crawlerServiceUtil: CrawlerServiceUtils) {}
@@ -61,11 +67,62 @@ export class SiteWorldPopService {
     }
   }
 
+  public async scrapeInfoCountry() {
+    const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL);
+    try {
+      const mainLinks: ElementHandle[] = await page.$$(this.NAVIGATION_ID);
+
+      const countriesLink = Array.from(mainLinks)[this.LOCL_COUNTRY];
+
+      await this.crawlerServiceUtil.clickHandler(page, countriesLink);
+
+      const countriesLinks = await page.$$eval(this.COUNTRY_TABLE, (els) => els.map((el) => el.innerHTML.split('"',2).pop()))
+
+      for(let link of countriesLinks){
+        const pageCountry: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL+link);
+
+        const {populationRank,capital,subregion} = await pageCountry.$$eval(this.COUNTRY_ROWVALUE, (els) => {
+          const populationRank = els[0].textContent;
+          const capital = els[10].textContent;
+          const subregion = els[12].textContent;
+          return {
+            populationRank,
+            capital,
+            subregion
+          }
+        });
+
+        const {medianAge,medianManAge,medianWomanAge} = await pageCountry.$$eval(this.COUNTRY_AGE, (els) => {
+          const medianAge = els[0].textContent;
+          const medianManAge = els[1].textContent;
+          const medianWomanAge = els[2].textContent;
+          return {
+            medianAge,
+            medianManAge,
+            medianWomanAge
+          }
+        });
+        const population = await pageCountry.$$eval(this.COUNTRY_POPULATION, (els) => els.map((el) => el.textContent));
+        //const capital = await pageCountry.$$eval(this.COUNTRY_POPULATION_RANK, (els) => els.map((el) => el.textContent));
+
+        console.log(population[0],populationRank,capital, subregion,medianAge,medianManAge,medianWomanAge);
+        console.log(link);
+        
+        await this.crawlerServiceUtil.closePage(pageCountry);
+      }
+
+      await this.crawlerServiceUtil.closePage(page);      
+      return true;
+    } catch(e) {
+      console.log(e);      
+    }
+  }
+
   private async scrapeContinents(page: Page) {
     try {
       const mainLinks: ElementHandle[] = await page.$$(this.NAVIGATION_ID);
 
-      const continentLink = Array.from(mainLinks)[this.LOCL];
+      const continentLink = Array.from(mainLinks)[this.LOCL_CONTINENT];
 
       await this.crawlerServiceUtil.clickHandler(page, continentLink);
 

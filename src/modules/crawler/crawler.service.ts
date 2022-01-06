@@ -54,6 +54,14 @@ export class CrawlerService {
     return continents;
   }
 
+  async scrapeInfoAboutCountry() {
+    // const countries = await this.countryService.getCountries();
+    // console.log(countries);
+    const country = await this.worldPopService.scrapeInfoCountry()
+    console.log(country);    
+    return country;
+  }
+
   async scrapeImagesByCountries(): Promise<boolean> {
     try {
       const countries = await this.countryService.getCountries();

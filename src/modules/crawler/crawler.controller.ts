@@ -41,6 +41,15 @@ export class CrawlerController {
     return this.crawlerService.scrapeCountry(continent);
   }
 
+  @ApiOperation({ summary: 'crawl all info about country' })
+  @ApiResponse({ status: 200 })
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @Post('infoCountry')
+  scrapeInfoAboutCountry() {
+    return this.crawlerService.scrapeInfoAboutCountry();
+  }
+
   @ApiOperation({ summary: 'scrape country by continent' })
   @ApiResponse({ status: 200 })
   @Roles('ADMIN')
