@@ -41,7 +41,6 @@ export class SiteWorldPopService {
       }
 
       const continentElement = continentElements[continentIndex];
-
       await this.crawlerServiceUtil.clickHandler(page, continentElement); // click on current element
 
       const elementTables = await page.$$(this.COUNTRY_TABLE_CLASS);
@@ -50,7 +49,6 @@ export class SiteWorldPopService {
       const countryElements = await countryTableElement.$$(this.COUNTRY_RAWS);
       const countries = await Promise.all(<ICountries[]>countryElements.map(this.handleCountriesElements.bind(this)));
       await this.crawlerServiceUtil.closePage(page);
-
       return {
         countries,
         countryElements,

@@ -32,12 +32,11 @@ export class CrawlerController {
 
   @ApiOperation({ summary: 'scrape country by continent' })
   @ApiResponse({ status: 200 })
-  @Roles('ADMIN')
-  @UseGuards(RolesGuard)
+  //@Roles('ADMIN')
+  //@UseGuards(RolesGuard)
   @Post('country')
   scrapeCountry(@Body() scrapeDto: ScrapeCountryDto) {
     const { continent } = scrapeDto;
-
     return this.crawlerService.scrapeCountry(continent);
   }
 }
