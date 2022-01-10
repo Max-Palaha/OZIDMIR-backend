@@ -11,5 +11,6 @@ export default (country: CountryDocument): ICountry => {
     },
     population: country.population,
     density: country.density,
+    image: country.image,
   };
 };

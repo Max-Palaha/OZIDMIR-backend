@@ -22,7 +22,13 @@ export class CountryService {
     return countries.map(dumpCountry);
   }
 
-  async findCountryByName(name: string): Promise<CountryDocument> {
+  async getCountriesWithoutImage(): Promise<ICountry[]> {
+    const countries = await this.countryModel.find({ image: null }).lean();
+
+    return countries.map(dumpCountry);
+  }
+
+  async getCountryByName(name: string): Promise<CountryDocument> {
     const country = await this.countryModel.findOne({ name }).lean();
 
     return country;

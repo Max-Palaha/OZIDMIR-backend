@@ -13,8 +13,10 @@ export class UnsplashService {
 
   public async getImageByCountry(name: string): Promise<Buffer> {
     const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL, this.IS_DISABLE_IMAGES);
+    await this.crawlerServiceUtil.crawl(this.SITE_URL, this.IS_DISABLE_IMAGES);
     try {
       await this.crawlerServiceUtil.inputHandler(page, name, this.SEARCH_CLASS);
+      // await page.waitForSelector(this.IMAGE_CLASS);
       const imageLink = await page.$eval(this.IMAGE_CLASS, (el: HTMLImageElement) => el.src);
       const [response] = await Promise.all([
         page.waitForResponse((response) => response.url().includes('photo')),
