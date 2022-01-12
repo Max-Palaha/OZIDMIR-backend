@@ -4,11 +4,13 @@ import { CountryService } from '../country/country.service';
 import { SiteNumbeoService } from '../utils/crawlSites/numbeo/numbeo.site.service';
 import { IScrapeContinents, IScrapeCountries, ICountries } from '../utils/crawlSites/worldPop/interfaces';
 import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';
+import { SiteTurizmService } from '../utils/crawlSites/Turizm/turizm.site.service';
 
 @Injectable()
 export class CrawlerService {
   private readonly NOT_EXIST_CONTINENT = 'not exist continent';
   constructor(
+    private turizmService: SiteTurizmService,
     private numbeoService: SiteNumbeoService,
     private worldPopService: SiteWorldPopService,
     private continentService: ContinentService,
@@ -51,5 +53,9 @@ export class CrawlerService {
   async scrapeCities(countryName: string): Promise<string[]> {
     const cities = await this.numbeoService.scrapeAllCitiesByCountry(countryName);
     return cities;
+  }
+  async scrapeAttraction(countryName: string, cityName: string): Promise<string[]> {
+    const attractions = await this.turizmService.scrapeAttractionsOfCity(countryName, cityName);
+    return attractions;
   }
 }

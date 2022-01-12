@@ -3,12 +3,13 @@ import { ContinentModule } from '../continent/continent.module';
 import { CountryModule } from '../country/country.module';
 import { AuthUtilsModule } from '../utils/auth/auth.utils.module';
 import { SiteNumbeoModule } from '../utils/crawlSites/numbeo/numbeo.site.module';
+import { SiteTurizmModule } from '../utils/crawlSites/Turizm/turizm.site.module';
 import { SiteWorldPopModule } from '../utils/crawlSites/worldPop/worldPop.site.module';
 import { CrawlerController } from './crawler.controller';
 import { CrawlerService } from './crawler.service';
 @Module({
   controllers: [CrawlerController],
   providers: [CrawlerService],
-  imports: [SiteNumbeoModule, SiteWorldPopModule, ContinentModule, AuthUtilsModule, CountryModule],
+  imports: [SiteNumbeoModule, SiteWorldPopModule, ContinentModule, AuthUtilsModule, CountryModule, SiteTurizmModule],
 })
 export class CrawlerModule {}
