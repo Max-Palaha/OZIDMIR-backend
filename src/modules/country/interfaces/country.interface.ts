@@ -1,4 +1,4 @@
-import { IObjectId } from 'src/modules/core/mongoose/interfaces';
+import { IObjectId } from '../../core/mongoose/interfaces';
 
 export type ICountry = {
   id: IObjectId;
@@ -9,4 +9,5 @@ export type ICountry = {
   };
   population: string;
   density: string;
+  image: string;
 };

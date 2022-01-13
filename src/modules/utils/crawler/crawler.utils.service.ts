@@ -6,15 +6,22 @@ import { clickPage, pageOptions, viewPort } from './helpers/crawler.options';
 
 @Injectable()
 export class CrawlerServiceUtils {
+  // errors
+  private readonly BROWSER_CONNECTED_ERROR = "Can't connect to current browser";
+  // values
   private readonly USER_AGENT = 'INSERT_USERAGENT';
   private readonly TIMEOUT = 20000;
   private readonly COUNT_OF_DEFAULT_PAGES = 1;
+  private readonly DEFAULT_TIMEOUT_FOR_BROWSER = 3000;
+  private readonly DEFAULT_COUNT_OF_PAGES_PER_BROWSER = 5;
   private readonly slowMo = 0;
+  private countOfOpenedPage = 0;
   private readonly devTools = false;
   private readonly headless: boolean;
   private readonly viewPort: Viewport;
   private readonly pageOptions: WaitForOptions;
   private browser: Browser;
+  private isBrowserConnected: boolean;
   // INPUT HANDLER
   private readonly CONFIRM_KEYBOARD_NAME = 'Enter';
 
@@ -22,12 +29,15 @@ export class CrawlerServiceUtils {
     this.pageOptions = pageOptions;
     this.viewPort = viewPort;
     this.headless = headless;
+    this.isBrowserConnected = false;
   }
 
   public async crawl(url: string, isDisableImages = true): Promise<Page> {
     try {
-      if (!this.browser) {
+      if (!this.isBrowserConnected) {
         await this.startBrowser();
+      } else {
+        await this.waitForConnectedBrowser();
       }
       const currentPage = await this.createPage(url);
       if (isDisableImages) {
@@ -42,23 +52,9 @@ export class CrawlerServiceUtils {
 
   public async closePage(page: Page): Promise<void> {
     try {
+      this.countOfOpenedPage -= 1;
       await page.close();
       await this.releaseBrowser();
-
-      return;
-    } catch (error) {
-      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  public async releaseBrowser(): Promise<void> {
-    try {
-      const pages = await this.browser.pages();
-      if (pages.length === this.COUNT_OF_DEFAULT_PAGES) {
-        await this.browser.close();
-
-        this.browser = null;
-      }
 
       return;
     } catch (error) {
@@ -98,6 +94,7 @@ export class CrawlerServiceUtils {
 
   private async startBrowser(): Promise<void> {
     try {
+      this.isBrowserConnected = true;
       this.browser = await puppeteer.launch({
         headless: this.headless,
         slowMo: this.slowMo,
@@ -111,7 +108,24 @@ export class CrawlerServiceUtils {
     }
   }
 
+  private async releaseBrowser(): Promise<void> {
+    try {
+      const pages = await this.browser.pages();
+      if (pages.length === this.COUNT_OF_DEFAULT_PAGES) {
+        await this.browser.close();
+        this.isBrowserConnected = false;
+        this.browser = null;
+      }
+
+      return;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   private async createPage(url: string): Promise<Page> {
+    await this.waitForAvailablePage();
+    this.countOfOpenedPage += 1;
     const page = await this.browser.newPage();
     try {
       await page.setViewport(this.viewPort);
@@ -141,5 +155,33 @@ export class CrawlerServiceUtils {
     } catch (err) {
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private async waitForConnectedBrowser() {
+    if (!this.browser) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (!this.browser) {
+            reject(this.BROWSER_CONNECTED_ERROR);
+          }
+          resolve(this.browser);
+        }, this.DEFAULT_TIMEOUT_FOR_BROWSER);
+      });
+    }
+
+    return this.browser;
+  }
+
+  private async waitForAvailablePage() {
+    console.log(this.countOfOpenedPage);
+    if (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {
+      new Promise((resolve) => {
+        while (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {
+          setTimeout(() => true, this.DEFAULT_TIMEOUT_FOR_BROWSER);
+        }
+        resolve(true);
+      });
+    }
+    console.log('before', this.countOfOpenedPage);
   }
 }
