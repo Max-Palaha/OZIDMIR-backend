@@ -32,7 +32,6 @@ export class NotificationEvents implements OnGatewayInit, OnGatewayConnection, O
 
   @SubscribeMessage('events')
   findAll(): Observable<WsResponse<number>> {
-    console.log('events');
     this.server.emit('notification', 'dss');
 
     return from([1, 2, 3]).pipe(map((item) => ({ event: 'events', data: item })));

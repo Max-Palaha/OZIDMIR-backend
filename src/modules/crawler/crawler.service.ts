@@ -55,11 +55,9 @@ export class CrawlerService {
   }
 
   async scrapeInfoAboutCountry() {
-    // const countries = await this.countryService.getCountries();
-    // console.log(countries);
-    const country = await this.worldPopService.scrapeInfoCountry()
-    console.log(country);    
-    return country;
+    const countries = await this.worldPopService.scrapeInfoCountry()
+    await Promise.all(countries.map(country => this.countryService.updateCountryByName(country.name, country)))
+    return true;
   }
 
   async scrapeImagesByCountries(): Promise<boolean> {

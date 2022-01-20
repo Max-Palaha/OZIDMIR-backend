@@ -173,7 +173,6 @@ export class CrawlerServiceUtils {
   }
 
   private async waitForAvailablePage() {
-    console.log(this.countOfOpenedPage);
     if (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {
       new Promise((resolve) => {
         while (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {
@@ -182,6 +181,5 @@ export class CrawlerServiceUtils {
         resolve(true);
       });
     }
-    console.log('before', this.countOfOpenedPage);
   }
 }

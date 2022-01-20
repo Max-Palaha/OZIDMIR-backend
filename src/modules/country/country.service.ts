@@ -48,6 +48,14 @@ export class CountryService {
     }
   }
 
+  async updateCountryByName(countryName: string, updatedFileds: ICountryUpdatedFields): Promise<void> {
+    try {
+      await this.countryModel.updateOne({ name: countryName }, updatedFileds);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async createCountries(countries: ICreateCountry[], continent: IObjectId): Promise<void> {
     const countriesPromise = countries.map((country) => this.createCountry({ ...country, continent }));
 

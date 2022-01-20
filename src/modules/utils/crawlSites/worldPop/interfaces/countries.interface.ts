@@ -1,11 +1,11 @@
 export interface ICountries {
   name: string;
-  populationRank?: number;
+  populationRank?: string;
   population: string;
   density: string;
   capital?: string;
   subregion?: string;
-  medianAge?: number;
-  medianManAge?: number;
-  medianWomanAge?: number;
+  medianAge?: string;
+  medianManAge?: string;
+  medianWomanAge?: string;
 }

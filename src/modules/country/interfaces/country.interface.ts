@@ -8,6 +8,14 @@ export type ICountry = {
     name: string;
   };
   population: string;
+  populationRank: string;
+  populationAge:{
+    medianAge: string;
+    medianManAge: string;
+    medianWomanAge: string;
+  }
   density: string;
+  capital: string;
+  subregion: string;
   image: string;
 };
