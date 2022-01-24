@@ -18,7 +18,7 @@ export class UsersService {
 
   async createUser(createUserDto: IUserCreate): Promise<IUser> {
     try {
-      const role = await this.roleService.getRoleByName('ADMIN');
+      const role = await this.roleService.getRoleByName('USER');
       const user = await this.userModel.create({
         ...createUserDto,
         roles: [role.id],

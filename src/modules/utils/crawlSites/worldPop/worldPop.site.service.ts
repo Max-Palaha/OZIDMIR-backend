@@ -24,7 +24,7 @@ export class SiteWorldPopService {
 
   private readonly COUNTRY_RAWS = 'tr';
   private readonly IC = 0; // country index of table in array
-  constructor(private crawlerServiceUtil: CrawlerServiceUtils,private countryService:CountryService) {}
+  constructor(private crawlerServiceUtil: CrawlerServiceUtils) {}
 
   public async scrapePageContinents(): Promise<IScrapeContinents> {
     const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL);
@@ -77,18 +77,18 @@ export class SiteWorldPopService {
 
       await this.crawlerServiceUtil.clickHandler(page, countriesLink);
 
-      const countriesLinks = await page.$$eval(this.COUNTRY_TABLE, (els) => els.map((el) => el.innerHTML.split('"',2).pop()))
+      const countriesLinks = await page.$$eval(this.COUNTRY_TABLE, (els) => els.map((el) => el.innerHTML.split('"', 2).pop()))
 
       let arrayOfCountries: ICountryUpdatedFields[] = []
       for(let link of countriesLinks){
-        const pageCountry: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL+link);
+        const pageCountry: Page = await this.crawlerServiceUtil.crawl(`${this.SITE_URL}${link}`);
 
         const name = await pageCountry.$eval(this.COUNTRY_NAME, el => {
-          const arrayh1 = el.innerHTML.split(' ');
-          arrayh1.pop();
-          arrayh1.pop();
-          arrayh1.pop();
-          return arrayh1.join(' ');
+          const nameOfCountry = el.innerHTML.split(' ');
+          nameOfCountry.pop();
+          nameOfCountry.pop();
+          nameOfCountry.pop();
+          return nameOfCountry.join(' ');
         })
         
         const {populationRank,capital,subregion,density} = await pageCountry.$$eval(this.COUNTRY_ROWVALUE, (els) => {
