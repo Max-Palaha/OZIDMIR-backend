@@ -1,4 +1,4 @@
-import { IObjectId } from 'src/modules/core/mongoose/interfaces';
+import { IObjectId } from '../../core/mongoose/interfaces';
 
 export type ICountry = {
   id: IObjectId;
@@ -8,5 +8,14 @@ export type ICountry = {
     name: string;
   };
   population: string;
+  populationRank: string;
+  populationAge:{
+    medianAge: string;
+    medianManAge: string;
+    medianWomanAge: string;
+  }
   density: string;
+  capital: string;
+  subregion: string;
+  image: string;
 };

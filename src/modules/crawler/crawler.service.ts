@@ -54,11 +54,16 @@ export class CrawlerService {
     return continents;
   }
 
+  async scrapeInfoAboutCountry() {
+    const countries = await this.worldPopService.scrapeInfoCountry()
+    await Promise.all(countries.map(country => this.countryService.updateCountryByName(country.name, country)))
+    return true;
+  }
+
   async scrapeImagesByCountries(): Promise<boolean> {
     try {
-      const countries = await this.countryService.getCountries();
-
-      const countriesPromises = countries.slice(0, 1).map(async (country) => {
+      const countries = await this.countryService.getCountriesWithoutImage();
+      const countriesPromises = countries.slice(0, 10).map(async (country) => {
         const buffer = await this.unsplashService.getImageByCountry(country.name);
         const image = await this.s3Service.uploadImage(buffer, this.FOLDER_NAME_COUNTRIES, country.continent.id);
         await this.countryService.updateCountryById(country.id, { image });

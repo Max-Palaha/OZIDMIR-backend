@@ -22,7 +22,13 @@ export class CountryService {
     return countries.map(dumpCountry);
   }
 
-  async findCountryByName(name: string): Promise<CountryDocument> {
+  async getCountriesWithoutImage(): Promise<ICountry[]> {
+    const countries = await this.countryModel.find({ image: null }).lean();
+
+    return countries.map(dumpCountry);
+  }
+
+  async getCountryByName(name: string): Promise<CountryDocument> {
     const country = await this.countryModel.findOne({ name }).lean();
 
     return country;
@@ -37,6 +43,14 @@ export class CountryService {
   async updateCountryById(countryId: IObjectId, updatedFileds: ICountryUpdatedFields): Promise<void> {
     try {
       await this.countryModel.updateOne({ _id: countryId }, updatedFileds);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateCountryByName(countryName: string, updatedFileds: ICountryUpdatedFields): Promise<void> {
+    try {
+      await this.countryModel.updateOne({ name: countryName }, updatedFileds);
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
