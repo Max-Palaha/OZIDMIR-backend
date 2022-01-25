@@ -45,7 +45,7 @@ export class CrawlerController {
   @ApiResponse({ status: 200 })
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
-  @Post('infoCountry')
+  @Post('countries/details')
   scrapeInfoAboutCountry() {
     return this.crawlerService.scrapeInfoAboutCountry();
   }

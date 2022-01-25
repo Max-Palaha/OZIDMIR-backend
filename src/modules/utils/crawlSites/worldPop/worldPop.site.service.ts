@@ -77,7 +77,12 @@ export class SiteWorldPopService {
 
       await this.crawlerServiceUtil.clickHandler(page, countriesLink);
 
-      const countriesLinks = await page.$$eval(this.COUNTRY_TABLE, (els) => els.map((el) => el.innerHTML.split('"', 2).pop()))
+      const countriesLinks = await page.$$eval(this.COUNTRY_TABLE, (els) => els.map((el) => {
+        el.
+        innerHTML.
+        split('"', 2).
+        pop()
+      }))
 
       let arrayOfCountries: ICountryUpdatedFields[] = []
       for(let link of countriesLinks){
@@ -91,7 +96,7 @@ export class SiteWorldPopService {
           return nameOfCountry.join(' ');
         })
         
-        const {populationRank,capital,subregion,density} = await pageCountry.$$eval(this.COUNTRY_ROWVALUE, (els) => {
+        const {populationRank, capital, subregion, density} = await pageCountry.$$eval(this.COUNTRY_ROWVALUE, (els) => {
           const populationRank = els[0].textContent;
           const density = els[7].textContent;
           const capital = els[10].textContent;
@@ -104,7 +109,7 @@ export class SiteWorldPopService {
           }
         });
         
-        const {medianAge,medianManAge,medianWomanAge} = await pageCountry.$$eval(this.COUNTRY_AGE, (els) => {
+        const {medianAge, medianManAge, medianWomanAge} = await pageCountry.$$eval(this.COUNTRY_AGE, (els) => {
           if (els[0]){  
             const medianAge = els[0].textContent;
             const medianManAge = els[1].textContent;
