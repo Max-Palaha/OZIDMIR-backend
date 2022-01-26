@@ -18,7 +18,7 @@ export class S3Service {
       };
 
       await this.s3.upload(params).promise();
-
+      
       return fileName;
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);

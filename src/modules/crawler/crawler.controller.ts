@@ -46,8 +46,8 @@ export class CrawlerController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post('countries/details')
-  scrapeInfoAboutCountry() {
-    return this.crawlerService.scrapeInfoAboutCountry();
+  scrapeInfoAboutCountries() {
+    return this.crawlerService.scrapeInfoAboutCountries();
   }
 
   @ApiOperation({ summary: 'scrape country by continent' })
