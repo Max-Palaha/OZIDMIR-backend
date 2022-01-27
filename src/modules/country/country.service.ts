@@ -5,9 +5,10 @@ import * as mongoose from 'mongoose';
 import { Country, CountryDocument } from './schemas/country.schema';
 import { Logger } from '../core/logger/helpers/logger.decorator';
 import { LoggerService } from '../core/logger/logger.service';
-import { ICountry, ICountryUpdatedFields, ICreateCountry } from './interfaces';
+import { ICountry, ICountryUpdatedFields, ICreateCountry, IPaginationParam } from './interfaces';
 import { dumpCountry } from './dump';
 import { IObjectId } from '../core/mongoose/interfaces';
+import { CountriesDto } from './dto/get.countries.dto';
 
 @Injectable()
 export class CountryService {
@@ -16,10 +17,24 @@ export class CountryService {
     @InjectModel(Country.name) private countryModel: Model<CountryDocument>,
   ) {}
 
-  async getCountries(): Promise<ICountry[]> {
-    const countries = await this.countryModel.find().lean();
+  async getCountries(filter: CountriesDto): Promise<ICountry[]> {
+    const countriesDocument = await this.countryModel.aggregate([
+      {$lookup: {
+          from: 'continents',
+          localField: 'continent',
+          foreignField: '_id',
+          as: 'continent'
+        }
+      },
+      { $unwind: '$continent' },
+      { $match: { 'continent.name': filter.continent }}
+    ])
+    .skip(filter.offset)
+    .limit(filter.limit);
 
-    return countries.map(dumpCountry);
+    const countries = countriesDocument.map(dumpCountry)
+    
+    return countries;
   }
 
   async getCountriesWithoutImage(): Promise<ICountry[]> {

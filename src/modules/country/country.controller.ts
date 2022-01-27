@@ -1,7 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CountryService } from './country.service';
-import { CountryDto } from './dto';
+import { CountryDto, PaginationParamDto } from './dto';
+import { CountriesDto } from './dto/get.countries.dto';
 import { ICountry } from './interfaces';
 
 @ApiTags('Country')
@@ -12,7 +13,7 @@ export class CountryController {
   @ApiOperation({ summary: 'get all countries' })
   @ApiResponse({ status: 200, type: [CountryDto] })
   @Get()
-  getAll(): Promise<ICountry[]> {
-    return this.continentService.getCountries();
+  getCountries(@Body() countriesDto : CountriesDto): Promise<ICountry[]> {
+    return this.continentService.getCountries(countriesDto);
   }
 }
