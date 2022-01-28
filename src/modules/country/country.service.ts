@@ -18,6 +18,26 @@ export class CountryService {
   ) {}
 
   async getCountries(filter: CountriesDto): Promise<ICountry[]> {
+    if (filter.continent === 'All'){
+      const countriesDocument = await this.countryModel.aggregate([
+        {$lookup: {
+            from: 'continents',
+            localField: 'continent',
+            foreignField: '_id',
+            as: 'continent'
+          }
+        },
+        { $unwind: '$continent' },
+        { $match: {}}
+      ])
+      .skip(filter.offset)
+      .limit(filter.limit);
+  
+      const countries = countriesDocument.map(dumpCountry)
+      
+      return countries;
+    }
+    
     const countriesDocument = await this.countryModel.aggregate([
       {$lookup: {
           from: 'continents',
