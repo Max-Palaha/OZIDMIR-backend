@@ -14,6 +14,6 @@ export class CountriesDto {
 
   @Type(() => Number)
   @IsNumber({}, { message: 'Necessary type number' })
-  @Min(0)
+  @Min(1)
   limit: number;
 }
