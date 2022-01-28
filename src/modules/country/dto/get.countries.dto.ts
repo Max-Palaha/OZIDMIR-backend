@@ -8,12 +8,12 @@ export class CountriesDto {
 
   @ApiProperty({ example: 'Europe', description: 'name' })
   @Type(() => Number)
-  @IsNumber({},{ message: 'Necessary type number' })
+  @IsNumber({}, { message: 'Necessary type number' })
   @Min(0)
   offset: number;
 
   @Type(() => Number)
-  @IsNumber({},{ message: 'Necessary type number' })
+  @IsNumber({}, { message: 'Necessary type number' })
   @Min(0)
   limit: number;
 }

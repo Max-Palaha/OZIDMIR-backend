@@ -13,7 +13,7 @@ export class CountryController {
   @ApiOperation({ summary: 'get all countries' })
   @ApiResponse({ status: 200, type: [CountryDto] })
   @Get()
-  getCountries(@Body() countriesDto : CountriesDto): Promise<ICountry[]> {
+  getCountries(@Body() countriesDto: CountriesDto): Promise<ICountry[]> {
     return this.continentService.getCountries(countriesDto);
   }
 }
