@@ -12,13 +12,15 @@ import { CountriesDto } from './dto/get.countries.dto';
 
 @Injectable()
 export class CountryService {
+  private readonly ALL_CONTINENTS = 'All';
+
   constructor(
     @Logger('CountryService') private logger: LoggerService,
     @InjectModel(Country.name) private countryModel: Model<CountryDocument>,
   ) {}
 
   async getCountries(filter: CountriesDto): Promise<ICountry[]> {
-    if (filter.continent === 'All'){
+    if (filter.continent === this.ALL_CONTINENTS){
       const countriesDocument = await this.countryModel.aggregate([
         {$lookup: {
             from: 'continents',
@@ -37,7 +39,6 @@ export class CountryService {
       
       return countries;
     }
-    
     const countriesDocument = await this.countryModel.aggregate([
       {$lookup: {
           from: 'continents',
