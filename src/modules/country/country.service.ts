@@ -12,6 +12,7 @@ import { CountriesDto } from './dto/get.countries.dto';
 
 @Injectable()
 export class CountryService {
+  private readonly INAVALID_INPUT_DATA = "Invalid input data";
 
   constructor(
     @Logger('CountryService') private logger: LoggerService,
@@ -33,7 +34,7 @@ export class CountryService {
         { $match: {}}
       ])
       .skip(filter.offset)
-      .limit(filter.limit);
+      .limit(filter.limit);      
   
       const countries = countriesDocument.map(dumpCountry)
       
@@ -54,7 +55,11 @@ export class CountryService {
     .skip(filter.offset)
     .limit(filter.limit);
 
-    const countries = countriesDocument.map(dumpCountry)
+    const countries = countriesDocument.map(dumpCountry);
+
+    if(!countries[0]){
+      throw new HttpException(this.INAVALID_INPUT_DATA, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     
     return countries;
     } catch(error) {
