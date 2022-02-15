@@ -22,7 +22,7 @@ export class AuthController {
   async login(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
     try {
       const userData = await this.authService.login(userDto);
-      res.cookie('refreshToken', userData.token.refreshToken, {
+      res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
@@ -38,7 +38,7 @@ export class AuthController {
   async registration(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
     try {
       const userData = await this.authService.registration(userDto);
-      res.cookie('refreshToken', userData.token.refreshToken, {
+      res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
@@ -65,7 +65,7 @@ export class AuthController {
     try {
       const { refreshToken } = req.cookies;
       const userData = await this.authService.refresh(refreshToken);
-      res.cookie('refreshToken', userData.token.refreshToken, {
+      res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
@@ -85,7 +85,7 @@ export class AuthController {
       res.clearCookie('refreshToken');
       return token;
     } catch (error) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.BAD_REQUEST);
     }
   }
 

@@ -42,7 +42,7 @@ export class MailService {
         context,
       });
     } catch (error) {
-      throw new HttpException(error, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

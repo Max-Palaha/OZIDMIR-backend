@@ -15,7 +15,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [UserDto] })
-  @Roles('USER')
+  @Roles('ADMIN')
   @UseGuards(RolesGuard, JwtAuthGuard)
   @Get()
   getAll(): Promise<IUser[]> {
