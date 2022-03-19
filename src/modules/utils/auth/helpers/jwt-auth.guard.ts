@@ -1,5 +1,4 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Observable } from 'node_modules/rxjs/dist/types';
 import { AuthServiceUtils } from '../auth.utils.service';
 
@@ -9,7 +8,6 @@ export class JwtAuthGuard implements CanActivate {
   private readonly WRONG_AUTH = 'Wrong email or password';
 
   constructor(
-    private jwtService: JwtService,
     private authServiceUtils: AuthServiceUtils
     ) {}
 
@@ -18,6 +16,10 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+      }
+
       const [bearer, token] = authHeader.split(' ');
       if (bearer !== 'Bearer' || !token) {
         throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
