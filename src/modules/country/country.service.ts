@@ -19,27 +19,9 @@ export class CountryService {
     @InjectModel(Country.name) private countryModel: Model<CountryDocument>,
   ) {}
 
-  async getCountries(filter: CountriesDto): Promise<ICountry[]> {
+  async getCountries(filterDto: CountriesDto): Promise<ICountry[]> {
+    const filter = filterDto.continent ? { 'continent.name': filterDto.continent } : {};
     try {
-    if (!filter.continent){
-      const countriesDocument = await this.countryModel.aggregate([
-        {$lookup: {
-            from: 'continents',
-            localField: 'continent',
-            foreignField: '_id',
-            as: 'continent'
-          }
-        },
-        { $unwind: '$continent' },
-        { $match: {}}
-      ])
-      .skip(filter.offset)
-      .limit(filter.limit);      
-  
-      const countries = countriesDocument.map(dumpCountry)
-      
-      return countries;
-    }
 
     const countriesDocument = await this.countryModel.aggregate([
       {$lookup: {
@@ -50,14 +32,14 @@ export class CountryService {
         }
       },
       { $unwind: '$continent' },
-      { $match: { 'continent.name': filter.continent }}
+      { $match: filter}
     ])
-    .skip(filter.offset)
-    .limit(filter.limit);
+    .skip(filterDto.offset)
+    .limit(filterDto.limit);
 
     const countries = countriesDocument.map(dumpCountry);
 
-    if(!countries[0]){
+    if(!countries.length){
       throw new HttpException(this.INAVALID_INPUT_DATA, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
