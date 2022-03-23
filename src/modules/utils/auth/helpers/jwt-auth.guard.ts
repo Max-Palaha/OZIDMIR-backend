@@ -5,7 +5,9 @@ import { AuthServiceUtils } from '../auth.utils.service';
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   // validateUser
+  private readonly WRONG_UNAUTHORIZED = 'User not authorized';
   private readonly WRONG_AUTH = 'Wrong email or password';
+  private readonly UNKNOWN_ERRROR = 'Unknown error'
 
   constructor(
     private authServiceUtils: AuthServiceUtils
@@ -16,17 +18,18 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const authHeader = req.headers.authorization;
+      
       if (!authHeader) {
-        throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+        throw new HttpException(this.WRONG_UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
       }
 
       const [bearer, token] = authHeader.split(' ');
       if (bearer !== 'Bearer' || !token) {
-        throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
+        throw new HttpException(this.UNKNOWN_ERRROR, HttpStatus.UNAUTHORIZED);
       }
-
+      
       const user = this.authServiceUtils.validateAccessToken(token)
-      if(!user){
+      if(!user){        
         throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
       }
       req.user = user;

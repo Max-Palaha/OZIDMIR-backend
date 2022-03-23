@@ -12,7 +12,10 @@ export class AuthServiceUtils {
   // validateUser
   private readonly WRONG_AUTH = 'Wrong email or password';
 
-  constructor(private jwtService: JwtService, private userService: UsersService) {}
+  constructor(
+    private jwtService: JwtService,
+    private userService: UsersService
+    ) {}
 
   async generateTokens(user: UserDocument): Promise<IToken> {
     const payload = dumpUser(user);

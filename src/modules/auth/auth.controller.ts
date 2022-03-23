@@ -60,7 +60,7 @@ export class AuthController {
     }
   }
 
-  @Get('/refresh')
+  @Post('/refresh')
   async refresh(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
     try {
       const { refreshToken } = req.cookies;
@@ -68,7 +68,7 @@ export class AuthController {
       res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
-      });
+      });      
       return userData;
     } catch (error) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
