@@ -13,7 +13,9 @@ import { ROLES_KEY } from './roles-auth.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  private USER_UNAUTHORIZED = 'User not authorized';
+  private readonly USER_UNAUTHORIZED = 'User not authorized';
+
+  private readonly USER_NO_ACCESS_ROLE = 'The user does not have the appropriate role';
 
   constructor(private jwtService: JwtService, private reflector: Reflector) {}
 
@@ -33,13 +35,19 @@ export class RolesGuard implements CanActivate {
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({ message: this.USER_UNAUTHORIZED });
       }
+
       const user = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
       req.user = user;
+
       if (!requiredRoles) {
         return true;
       }
 
-      return user.roles.some((role: string) => requiredRoles.includes(role));
+      if (!user.roles.some((role: string) => requiredRoles.includes(role))) {
+        throw new UnauthorizedException({ message: this.USER_NO_ACCESS_ROLE });
+      }
+
+      return true;
     } catch (error) {
       throw new HttpException(error, HttpStatus.FORBIDDEN);
     }

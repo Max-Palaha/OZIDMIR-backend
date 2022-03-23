@@ -20,6 +20,9 @@ export class AuthService {
 
   // refresh token
   private readonly WRONG_REFRESH = 'Wrong REFRESH';
+  
+  // activation link
+  private readonly WRONG_ACTIVATION_LINK = 'Wrong activation';
 
   constructor(
     private userService: UsersService,
@@ -35,7 +38,7 @@ export class AuthService {
       const tokens = await this.authServiceUtils.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
-        token: tokens,
+        tokens,
         user: dumpUser(user),
       };
     } catch (e) {
@@ -61,7 +64,7 @@ export class AuthService {
       const tokens = await this.authServiceUtils.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
-        token: tokens,
+        tokens,
         user: dumpUser(user),
       };
     } catch (error) {
@@ -70,6 +73,10 @@ export class AuthService {
   }
 
   async activate(activationLink: string): Promise<void> {
+    const user = this.userService.getUserByActivationLink(activationLink);
+    if(!user){
+      throw new HttpException(this.WRONG_ACTIVATION_LINK, HttpStatus.BAD_REQUEST);
+    }
     await this.userService.updateUser({ activationLink }, { isActivated: true });
   }
 
@@ -80,7 +87,6 @@ export class AuthService {
 
     const userData = this.authServiceUtils.validateRefreshToken(refreshToken);
     const tokenFromDb = await this.tokensService.findToken(refreshToken);
-
     if (!userData || !tokenFromDb) {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
@@ -89,8 +95,8 @@ export class AuthService {
     const tokens = await this.authServiceUtils.generateTokens(user);
     await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
-      token: tokens,
-      user: user,
+      tokens,
+      user: dumpUser(user),
     };
   }
 
