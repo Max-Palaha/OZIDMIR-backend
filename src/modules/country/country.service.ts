@@ -5,21 +5,43 @@ import * as mongoose from 'mongoose';
 import { Country, CountryDocument } from './schemas/country.schema';
 import { Logger } from '../core/logger/helpers/logger.decorator';
 import { LoggerService } from '../core/logger/logger.service';
-import { ICountry, ICountryUpdatedFields, ICreateCountry } from './interfaces';
+import { ICountry, ICountryUpdatedFields, ICreateCountry, IPaginationParam } from './interfaces';
 import { dumpCountry } from './dump';
 import { IObjectId } from '../core/mongoose/interfaces';
+import { CountriesDto } from './dto/get.countries.dto';
 
 @Injectable()
 export class CountryService {
+  private readonly INAVALID_INPUT_DATA = "Invalid input data";
+
   constructor(
     @Logger('CountryService') private logger: LoggerService,
     @InjectModel(Country.name) private countryModel: Model<CountryDocument>,
   ) {}
 
-  async getCountries(): Promise<ICountry[]> {
-    const countries = await this.countryModel.find().lean();
+  async getCountries(filterDto: CountriesDto): Promise<ICountry[]> {
+    const filter = filterDto.continent ? { 'continent.name': filterDto.continent } : {};
+    try {
 
-    return countries.map(dumpCountry);
+    const countriesDocument = await this.countryModel.aggregate([
+      {$lookup: {
+          from: 'continents',
+          localField: 'continent',
+          foreignField: '_id',
+          as: 'continent'
+        }
+      },
+      { $unwind: '$continent' },
+      { $match: filter}
+    ])
+    .skip(filterDto.offset)
+    .limit(filterDto.limit);
+
+    return countriesDocument.map(dumpCountry);
+    } catch(error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
   }
 
   async getCountriesWithoutImage(): Promise<ICountry[]> {
