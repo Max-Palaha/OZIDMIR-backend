@@ -10,7 +10,7 @@ export class S3Service {
 
   async uploadImage(file: Buffer, folder: string, subfolder: IObjectId) {
     try {
-      const fileName = uuid();
+      const fileName: string = uuid();
       const params = {
         Bucket: `${process.env.AWS_BUCKET}-${process.env.NODE_ENV}`,
         Body: file,

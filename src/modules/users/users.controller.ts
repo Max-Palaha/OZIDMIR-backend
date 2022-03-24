@@ -15,8 +15,8 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [UserDto] })
-  @Roles('USER')
-  @UseGuards(RolesGuard, JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   getAll(): Promise<IUser[]> {
     return this.usersService.getUsers();
@@ -25,7 +25,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Test create user' })
   @ApiResponse({ status: 200, type: Boolean })
   @Post()
-  create(@Body() userDto: CreateUserDto) {
+  create(@Body() userDto: CreateUserDto): Promise<IUser> {
     return this.usersService.createUser(userDto);
   }
 
@@ -34,7 +34,7 @@ export class UsersController {
   @Patch('/upload/photo')
   @UseGuards(RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
-  uploadPhoto(@Req() request: Request & { user: IUser }, @UploadedFile() file: Express.Multer.File) {
+  uploadPhoto(@Req() request: Request & { user: IUser }, @UploadedFile() file: Express.Multer.File): Promise<void> {
     return this.usersService.uploadPhoto(file, request.user);
   }
 }

@@ -7,16 +7,16 @@ import { clickPage, pageOptions, viewPort } from './helpers/crawler.options';
 @Injectable()
 export class CrawlerServiceUtils {
   // errors
-  private readonly BROWSER_CONNECTED_ERROR = "Can't connect to current browser";
+  private readonly BROWSER_CONNECTED_ERROR: string = "Can't connect to current browser";
   // values
-  private readonly USER_AGENT = 'INSERT_USERAGENT';
-  private readonly TIMEOUT = 20000;
-  private readonly COUNT_OF_DEFAULT_PAGES = 1;
-  private readonly DEFAULT_TIMEOUT_FOR_BROWSER = 3000;
-  private readonly DEFAULT_COUNT_OF_PAGES_PER_BROWSER = 5;
-  private readonly slowMo = 0;
+  private readonly USER_AGENT: string = 'INSERT_USERAGENT';
+  private readonly TIMEOUT: number = 20000;
+  private readonly COUNT_OF_DEFAULT_PAGES: number = 1;
+  private readonly DEFAULT_TIMEOUT_FOR_BROWSER: number = 3000;
+  private readonly DEFAULT_COUNT_OF_PAGES_PER_BROWSER: number = 5;
+  private readonly slowMo: number = 0;
   private countOfOpenedPage = 0;
-  private readonly devTools = false;
+  private readonly devTools: boolean = false;
   private readonly headless: boolean;
   private readonly viewPort: Viewport;
   private readonly pageOptions: WaitForOptions;
@@ -39,7 +39,7 @@ export class CrawlerServiceUtils {
       } else {
         await this.waitForConnectedBrowser();
       }
-      const currentPage = await this.createPage(url);
+      const currentPage: Page = await this.createPage(url);
       if (isDisableImages) {
         await this.disableImages(currentPage);
       }
@@ -64,7 +64,7 @@ export class CrawlerServiceUtils {
 
   public async getProperty(element: ElementHandle<Element>, property: string): Promise<string> {
     try {
-      const elementProperty = await element.getProperty(property);
+      const elementProperty: puppeteer.JSHandle<unknown> = await element.getProperty(property);
       const elementData: string = await elementProperty.jsonValue();
 
       return elementData;
@@ -110,7 +110,7 @@ export class CrawlerServiceUtils {
 
   private async releaseBrowser(): Promise<void> {
     try {
-      const pages = await this.browser.pages();
+      const pages: Page[] = await this.browser.pages();
       if (pages.length === this.COUNT_OF_DEFAULT_PAGES) {
         await this.browser.close();
         this.isBrowserConnected = false;
@@ -125,7 +125,7 @@ export class CrawlerServiceUtils {
   private async createPage(url: string): Promise<Page> {
     await this.waitForAvailablePage();
     this.countOfOpenedPage += 1;
-    const page = await this.browser.newPage();
+    const page: Page = await this.browser.newPage();
     try {
       await page.setViewport(this.viewPort);
       await page.setUserAgent(this.USER_AGENT);
@@ -181,6 +181,5 @@ export class CrawlerServiceUtils {
         resolve(true);
       });
     }
-    console.log('before', this.countOfOpenedPage);
   }
 }

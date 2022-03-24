@@ -6,16 +6,16 @@ import { ISendMail } from './interfaces';
 @Injectable()
 export class MailService {
   // sendUserResetPassword
-  private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
-  private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
-  private readonly ACTIVATION_MAIL_SUBJECT = 'Activation account by mail';
-  private readonly ACTIVATION_MAIL_PATH = './templates/activationMail';
-  private readonly DEFAULT_USER = 'OZIMIDR user';
+  private readonly RESET_PASSWORD_SUBJECT: string = 'Reset your OZIMIDR password';
+  private readonly RESET_PASSWORD_PATH: string = './templates/resetPassword';
+  private readonly ACTIVATION_MAIL_SUBJECT: string = 'Activation account by mail';
+  private readonly ACTIVATION_MAIL_PATH: string = './templates/activationMail';
+  private readonly DEFAULT_USER: string = 'OZIMIDR user';
 
   constructor(private mailerService: MailerService) {}
 
   async sendUserResetPassword(user: IUser, code: string): Promise<void> {
-    const url = `${process.env.APP_PATH}/auth/confirm?code=${code}`;
+    const url: string = `${process.env.APP_PATH}/auth/confirm?code=${code}`;
     const context: IUserEmail = {
       url,
       firstName: user.firstName || this.DEFAULT_USER,
@@ -42,7 +42,7 @@ export class MailService {
         context,
       });
     } catch (error) {
-      throw new HttpException(error, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -60,7 +60,7 @@ export class MailService {
     }
   }
 
-  async sendUserConfirmation() {
+  async sendUserConfirmation(): Promise<void> {
     //const url = `example.com/auth/confirm?token=${token}`;
 
     await this.mailerService.sendMail({

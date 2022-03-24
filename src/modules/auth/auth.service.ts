@@ -7,8 +7,9 @@ import { MailService } from '@core/mail/mail.service';
 import { TokensService } from '../tokens/tokens.service';
 import { dumpUser } from '../users/dump';
 import { AuthServiceUtils } from '../utils/auth/auth.utils.service';
-import { IAuth } from './interfaces';
+import { IAuth, IToken } from './interfaces';
 import { UserDocument } from '../users/schemas/user.schema';
+import { TokenDocument } from '../tokens/schemas/token.schema';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,7 @@ export class AuthService {
       const tokens: IToken = await this.authServiceUtils.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
-        token: tokens,
+        tokens,
         user: dumpUser(user),
       };
     } catch (e: unknown) {
@@ -46,23 +47,23 @@ export class AuthService {
 
   async registration(userDto: CreateUserDto): Promise<IAuth> {
     try {
-      const isExistUser = await this.userService.checkExistUserByEmail(userDto.email);
+      const isExistUser: boolean = await this.userService.checkExistUserByEmail(userDto.email);
       if (isExistUser) {
         throw new HttpException(this.EXIST_EMAIL_ERROR, HttpStatus.BAD_REQUEST);
       }
-      const hashPassword = await bcrypt.hash(userDto.password, this.SALT);
+      const hashPassword: string = await bcrypt.hash(userDto.password, this.SALT);
 
-      const activationLink = uuidv4();
+      const activationLink: string = uuidv4();
       await this.userService.createUser({ ...userDto, password: hashPassword, activationLink });
-      const user = await this.userService.getUserByEmail(userDto.email);
+      const user: UserDocument = await this.userService.getUserByEmail(userDto.email);
       await this.mailService.sendActivationMail(
         userDto.email,
         `${process.env.API_URL}/auth/activate/${activationLink}`,
       );
-      const tokens = await this.authServiceUtils.generateTokens(user);
+      const tokens: IToken = await this.authServiceUtils.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
-        token: tokens,
+        tokens,
         user: dumpUser(user),
       };
     } catch (error: unknown) {
@@ -74,24 +75,24 @@ export class AuthService {
     await this.userService.updateUser({ activationLink }, { isActivated: true });
   }
 
-  async refresh(refreshToken: string) {
+  async refresh(refreshToken: string): Promise<IAuth> {
     if (!refreshToken) {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
 
     const userData = this.authServiceUtils.validateRefreshToken(refreshToken);
-    const tokenFromDb = await this.tokensService.findToken(refreshToken);
+    const tokenFromDb: TokenDocument = await this.tokensService.findToken(refreshToken);
 
     if (!userData || !tokenFromDb) {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
 
-    const user = await this.userService.getUserByEmail(userData.email);
-    const tokens = await this.authServiceUtils.generateTokens(user);
+    const user: UserDocument = await this.userService.getUserByEmail(userData.email);
+    const tokens: IToken = await this.authServiceUtils.generateTokens(user);
     await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
-      token: tokens,
-      user: user,
+      tokens,
+      user: dumpUser(user),
     };
   }
 

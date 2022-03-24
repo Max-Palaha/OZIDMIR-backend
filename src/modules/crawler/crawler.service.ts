@@ -5,11 +5,13 @@ import { CountryService } from '../country/country.service';
 import { UnsplashService } from '../utils/crawlSites/unsplash/unsplash.site.service';
 import { IScrapeContinents, IScrapeCountries, ICountries } from '../utils/crawlSites/worldPop/interfaces';
 import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';
+import { ContinentDocument } from '../continent/schemas/continent.schema';
+import { ICountry, ICountryUpdatedFields } from '../country/interfaces';
 
 @Injectable()
 export class CrawlerService {
-  private readonly NOT_EXIST_CONTINENT = 'not exist continent';
-  private readonly FOLDER_NAME_COUNTRIES = 'countries';
+  private readonly NOT_EXIST_CONTINENT: string = 'not exist continent';
+  private readonly FOLDER_NAME_COUNTRIES: string = 'countries';
   constructor(
     private worldPopService: SiteWorldPopService,
     private unsplashService: UnsplashService,
@@ -26,7 +28,7 @@ export class CrawlerService {
     }
 
     const { countries }: IScrapeCountries = await this.worldPopService.scrapeCountryByContinent(continentName);
-    const count = await this.countryService.countCountriesByContinent(continent._id);
+    const count: number = await this.countryService.countCountriesByContinent(continent._id);
 
     if (!count) {
       await this.countryService.createCountries(countries, continent._id);
@@ -38,7 +40,7 @@ export class CrawlerService {
   async scrapeContinents(): Promise<string[]> {
     const { continents }: IScrapeContinents = await this.worldPopService.scrapePageContinents();
 
-    const count = await this.continentService.countContinents();
+    const count: number = await this.continentService.countContinents();
     if (!count) {
       await this.continentService.createContinents(continents);
     }
@@ -46,12 +48,22 @@ export class CrawlerService {
     return continents;
   }
 
+  async scrapeInfoAboutCountry(): Promise<boolean> {
+    const countries: ICountryUpdatedFields[] = await this.worldPopService.scrapeInfoCountry();
+    await Promise.all(countries.map((country) => this.countryService.updateCountryByName(country.name, country)));
+    return true;
+  }
+
   async scrapeImagesByCountries(): Promise<boolean> {
     try {
-      const countries = await this.countryService.getCountriesWithoutImage();
-      const countriesPromises = countries.slice(0, 10).map(async (country) => {
-        const buffer = await this.unsplashService.getImageByCountry(country.name);
-        const image = await this.s3Service.uploadImage(buffer, this.FOLDER_NAME_COUNTRIES, country.continent.id);
+      const countries: ICountry[] = await this.countryService.getCountriesWithoutImage();
+      const countriesPromises: Promise<void>[] = countries.slice(0, 10).map(async (country) => {
+        const buffer: Buffer = await this.unsplashService.getImageByCountry(country.name);
+        const image: string = await this.s3Service.uploadImage(
+          buffer,
+          this.FOLDER_NAME_COUNTRIES,
+          country.continent.id,
+        );
         await this.countryService.updateCountryById(country.id, { image });
       });
 

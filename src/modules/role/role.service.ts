@@ -30,12 +30,12 @@ export class RoleService {
   }
 
   async getRoles(): Promise<IRole[]> {
-    const roles = await this.roleModel.find().lean();
+    const roles: RoleDocument[] = await this.roleModel.find().lean();
     return roles.map(dumpRole);
   }
 
   async getRoleByName(name: string): Promise<IRole> {
-    const role = await this.roleModel.findOne({ name }).lean();
+    const role: RoleDocument = await this.roleModel.findOne({ name }).lean();
     return getRoleDump(role);
   }
 }

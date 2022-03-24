@@ -10,7 +10,7 @@ export class CsvParserController {
   @ApiOperation({ summary: 'parse csv' })
   @Post('parse')
   @UseInterceptors(FileInterceptor('file'))
-  async UploadCountryFile(@UploadedFile() file: Express.Multer.File) {
+  async UploadCountryFile(@UploadedFile() file: Express.Multer.File): Promise<Buffer[]> {
     return this.csvParserService.parseCountries(file.buffer);
   }
 }

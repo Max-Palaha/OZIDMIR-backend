@@ -7,7 +7,7 @@ export class LoggerInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, call: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
     const { method, url } = req;
-    const currentDate = Date.now();
+    const currentDate: number = Date.now();
 
     Logger.log(`${method} ${url} started 0ms`, context.getClass().name);
 

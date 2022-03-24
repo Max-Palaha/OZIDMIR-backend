@@ -1,16 +1,17 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { ValidationException } from '../exception/validation.exception';
 
 @Catch(HttpException)
 export class HttpErrorFilter implements ExceptionFilter {
   catch(exception: HttpException & ValidationException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
+    const ctx: HttpArgumentsHost = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
-    const status = exception?.getStatus();
-    const validation = exception.messages || [];
+    const status: number = exception?.getStatus();
+    const validation: string[] = exception.messages || [];
     const { stack } = exception;
-    const stacks = stack ? stack.split('\n').map(this.reformStack).filter(Boolean) : [];
+    const stacks: string[] = stack ? stack.split('\n').map(this.reformStack).filter(Boolean) : [];
 
     const errorResult = {
       code: status,
@@ -27,8 +28,8 @@ export class HttpErrorFilter implements ExceptionFilter {
     response.status(status).json(errorResult);
   }
 
-  private reformStack(stack: string) {
-    const folderName = process.env.npm_package_name; // name of folder project
+  private reformStack(stack: string): string {
+    const folderName: string = process.env.npm_package_name; // name of folder project
     const [, url] = stack.trim().split(folderName);
 
     return url || '';

@@ -4,11 +4,11 @@ import { CrawlerServiceUtils } from '../../crawler/crawler.utils.service';
 
 @Injectable()
 export class UnsplashService {
-  private readonly IS_DISABLE_IMAGES = false;
-  private readonly SITE_URL = 'https://unsplash.com/';
+  private readonly IS_DISABLE_IMAGES: boolean = false;
+  private readonly SITE_URL: string = 'https://unsplash.com/';
 
-  private readonly SEARCH_CLASS = '.gdt34';
-  private readonly IMAGE_CLASS = '.YVj9w';
+  private readonly SEARCH_CLASS: string = '.gdt34';
+  private readonly IMAGE_CLASS: string = '.YVj9w';
   constructor(private crawlerServiceUtil: CrawlerServiceUtils) {}
 
   public async getImageByCountry(name: string): Promise<Buffer> {
@@ -17,12 +17,12 @@ export class UnsplashService {
     try {
       await this.crawlerServiceUtil.inputHandler(page, name, this.SEARCH_CLASS);
       // await page.waitForSelector(this.IMAGE_CLASS);
-      const imageLink = await page.$eval(this.IMAGE_CLASS, (el: HTMLImageElement) => el.src);
+      const imageLink: string = await page.$eval(this.IMAGE_CLASS, (el: HTMLImageElement) => el.src);
       const [response] = await Promise.all([
         page.waitForResponse((response) => response.url().includes('photo')),
         page.goto(imageLink),
       ]);
-      const buffer = await response.buffer();
+      const buffer: Buffer = await response.buffer();
       await this.crawlerServiceUtil.closePage(page);
 
       return buffer;

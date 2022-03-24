@@ -23,8 +23,5 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "no-magic-numbers": true,
-    "prefer-readonly": true,
-    "interface-name": [true, "always-prefix"]
   }
 }

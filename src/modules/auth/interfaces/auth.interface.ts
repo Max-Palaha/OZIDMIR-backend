@@ -2,6 +2,6 @@ import { IUser } from '../../users/interfaces';
 import { IToken } from '.';
 
 export type IAuth = {
-  token: IToken;
+  tokens: IToken;
   user: IUser;
 };

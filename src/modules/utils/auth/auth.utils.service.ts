@@ -6,18 +6,25 @@ import { UserDocument } from '../../users/schemas/user.schema';
 import { IToken } from '../../auth/interfaces';
 import { dumpUser } from '../../users/dump';
 import { JwtService } from '@nestjs/jwt';
+import { IUser } from 'src/modules/users/interfaces';
 
 @Injectable()
 export class AuthServiceUtils {
   // validateUser
-  private readonly WRONG_AUTH = 'Wrong email or password';
+  private readonly WRONG_AUTH: string = 'Wrong email or password';
 
   constructor(private jwtService: JwtService, private userService: UsersService) {}
 
   async generateTokens(user: UserDocument): Promise<IToken> {
-    const payload = dumpUser(user);
-    const accessToken = this.jwtService.sign(payload, { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '30m' });
-    const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '30d' });
+    const payload: IUser = dumpUser(user);
+    const accessToken: string = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: '30m',
+    });
+    const refreshToken: string = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '30d',
+    });
     return {
       accessToken,
       refreshToken,
@@ -25,8 +32,8 @@ export class AuthServiceUtils {
   }
 
   async validateUser(userDto: CreateUserDto): Promise<void> {
-    const password = await this.userService.getUserPassword(userDto.email);
-    const passwordEquals = await bcrypt.compare(userDto.password, password);
+    const password: string = await this.userService.getUserPassword(userDto.email);
+    const passwordEquals: boolean = await bcrypt.compare(userDto.password, password);
     if (!passwordEquals) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }

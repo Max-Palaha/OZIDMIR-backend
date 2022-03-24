@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthDto, ParamActivationLinkDto } from './dto';
 import { MailService } from '@core/mail/mail.service';
 import { Response, Request } from 'express';
+import { IAuth } from './interfaces';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -19,10 +20,10 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/login')
-  async login(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response): Promise<IAuth> {
     try {
-      const userData = await this.authService.login(userDto);
-      res.cookie('refreshToken', userData.token.refreshToken, {
+      const userData: IAuth = await this.authService.login(userDto);
+      res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
@@ -35,10 +36,10 @@ export class AuthController {
   @ApiOperation({ summary: 'User registration' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/registration')
-  async registration(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
+  async registration(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response): Promise<IAuth> {
     try {
-      const userData = await this.authService.registration(userDto);
-      res.cookie('refreshToken', userData.token.refreshToken, {
+      const userData: IAuth = await this.authService.registration(userDto);
+      res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
@@ -51,9 +52,9 @@ export class AuthController {
   @ApiOperation({ summary: 'User activate' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Get('/activate/:activationLink')
-  async activate(@Param() params: ParamActivationLinkDto) {
+  async activate(@Param() params: ParamActivationLinkDto): Promise<void> {
     try {
-      const activationLink = params.activationLink;
+      const activationLink: string = params.activationLink;
       await this.authService.activate(activationLink);
     } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
@@ -61,17 +62,17 @@ export class AuthController {
   }
 
   @Get('/refresh')
-  async refresh(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
+  async refresh(@Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<IAuth> {
     try {
       const { refreshToken } = req.cookies;
-      const userData = await this.authService.refresh(refreshToken);
-      res.cookie('refreshToken', userData.token.refreshToken, {
+      const userData: IAuth = await this.authService.refresh(refreshToken);
+      res.cookie('refreshToken', userData.tokens.refreshToken, {
         maxAge: this.MONTH_IN_SECONDS,
         httpOnly: true,
       });
       return userData;
     } catch (error: unknown) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -92,7 +93,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User resetPass' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Put('/reset/password')
-  resetPass() {
+  resetPass(): Promise<void> {
     return this.mailService.sendUserConfirmation();
   }
 }
