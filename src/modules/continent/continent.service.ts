@@ -3,18 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Continent, ContinentDocument } from './schemas/continent.schema';
-import { Logger } from '../core/logger/helpers/logger.decorator';
-import { LoggerService } from '../core/logger/logger.service';
 import { TContinent } from './interfaces';
 import { dumpContinents } from './dump';
 
 @Injectable()
 export class ContinentService {
   private readonly CONTINENT_EXIST_ERROR = 'Continent already exist';
-  constructor(
-    @Logger('ContinentService') private logger: LoggerService,
-    @InjectModel(Continent.name) private continentModel: Model<ContinentDocument>,
-  ) {}
+  constructor(@InjectModel(Continent.name) private continentModel: Model<ContinentDocument>) {}
 
   async getContinents(): Promise<TContinent[]> {
     const continents = await this.continentModel.find().lean();

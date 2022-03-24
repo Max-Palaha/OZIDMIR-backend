@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { mongoObjectId } from '../../core/mongoose/interfaces';
+import { mongoObjectId } from '@core/mongoose/interfaces';
 import { User } from '../../users/schemas/user.schema';
 
 export type TokenDocument = Token & Document;

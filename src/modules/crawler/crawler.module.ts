@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ContinentModule } from '../continent/continent.module';
-import { S3Module } from '../core/s3/s3.module';
+import { S3Module } from '@core/s3/s3.module';
 import { CountryModule } from '../country/country.module';
 import { AuthUtilsModule } from '../utils/auth/auth.utils.module';
 import { SiteNumbeoModule } from '../utils/crawlSites/numbeo/numbeo.site.module';

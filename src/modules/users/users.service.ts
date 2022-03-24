@@ -5,7 +5,7 @@ import { dumpUser } from './dump';
 import { IUser, IUserCreate, IUserSearch, IUserUpdatedFields } from './interfaces';
 import { User, UserDocument } from './schemas/user.schema';
 import { RoleService } from '../role/role.service';
-import { S3Service } from '../core/s3/s3.service';
+import { S3Service } from '@core/s3/s3.service';
 
 @Injectable()
 export class UsersService {
@@ -27,7 +27,7 @@ export class UsersService {
       await user.save();
 
       return dumpUser(await this.getUserByEmail(createUserDto.email));
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -70,15 +70,15 @@ export class UsersService {
     return dumpUser(user);
   }
 
-  async updateUser(fieldsBySearch: IUserSearch, updatedFileds: IUserUpdatedFields) {
+  async updateUser(fieldsBySearch: IUserSearch, updatedFileds: IUserUpdatedFields): Promise<void> {
     try {
       await this.userModel.updateOne(fieldsBySearch, updatedFileds);
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async uploadPhoto(file: Express.Multer.File, user: IUser) {
+  async uploadPhoto(file: Express.Multer.File, user: IUser): Promise<void> {
     const { id } = user;
     const avatar = await this.s3Service.uploadImage(file.buffer, 'profile', id);
     await this.updateUser({ _id: id }, { avatar });

@@ -3,23 +3,24 @@ import { CreateUserDto } from '../users/dto/create.user.dto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { MailService } from '../core/mail/mail.service';
+import { MailService } from '@core/mail/mail.service';
 import { TokensService } from '../tokens/tokens.service';
 import { dumpUser } from '../users/dump';
 import { AuthServiceUtils } from '../utils/auth/auth.utils.service';
 import { IAuth } from './interfaces';
+import { UserDocument } from '../users/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
   // registration
-  private readonly EXIST_EMAIL_ERROR = 'Such email already exist';
-  private readonly SALT = 5;
+  private readonly EXIST_EMAIL_ERROR: string = 'Such email already exist';
+  private readonly SALT: number = 5;
 
   // validateUser
-  private readonly WRONG_AUTH = 'Wrong email or password';
+  private readonly WRONG_AUTH: string = 'Wrong email or password';
 
   // refresh token
-  private readonly WRONG_REFRESH = 'Wrong REFRESH';
+  private readonly WRONG_REFRESH: string = 'Wrong REFRESH';
 
   constructor(
     private userService: UsersService,
@@ -31,14 +32,14 @@ export class AuthService {
   async login(userDto: CreateUserDto): Promise<IAuth> {
     try {
       await this.authServiceUtils.validateUser(userDto);
-      const user = await this.userService.getUserByEmail(userDto.email);
-      const tokens = await this.authServiceUtils.generateTokens(user);
+      const user: UserDocument = await this.userService.getUserByEmail(userDto.email);
+      const tokens: IToken = await this.authServiceUtils.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
         token: tokens,
         user: dumpUser(user),
       };
-    } catch (e) {
+    } catch (e: unknown) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
   }
@@ -64,7 +65,7 @@ export class AuthService {
         token: tokens,
         user: dumpUser(user),
       };
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -73,7 +74,7 @@ export class AuthService {
     await this.userService.updateUser({ activationLink }, { isActivated: true });
   }
 
-  async refresh(refreshToken) {
+  async refresh(refreshToken: string) {
     if (!refreshToken) {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
@@ -94,7 +95,7 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken) {
+  async logout(refreshToken: string) {
     const token = await this.tokensService.removeToken(refreshToken);
     return token;
   }

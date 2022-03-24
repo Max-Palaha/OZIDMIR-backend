@@ -1,4 +1,4 @@
-import { IObjectId } from '../../core/mongoose/interfaces';
+import { IObjectId } from '@core/mongoose/interfaces';
 
 export type ICreateCountry = {
   name: string;

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Continent } from '../../continent/schemas/continent.schema';
-import { mongoObjectId, IObjectId } from '../../core/mongoose/interfaces';
+import { mongoObjectId, IObjectId } from '@core/mongoose/interfaces';
 
 export type CountryDocument = Country & Document;
 

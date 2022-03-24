@@ -6,8 +6,8 @@ import { Model } from 'mongoose';
 import { dumpRole } from './dump';
 import { IRole } from './interfaces';
 import getRoleDump from './dump/get.role.dump';
-import { Logger } from '../core/logger/helpers/logger.decorator';
-import { LoggerService } from '../core/logger/logger.service';
+import { Logger } from '@core/logger/helpers/logger.decorator';
+import { LoggerService } from '@core/logger/logger.service';
 
 @Injectable()
 export class RoleService {

@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../users/dto';
 import { AuthService } from './auth.service';
 import { AuthDto, ParamActivationLinkDto } from './dto';
-import { MailService } from '../core/mail/mail.service';
+import { MailService } from '@core/mail/mail.service';
 import { Response, Request } from 'express';
 
 @ApiTags('Auth')
@@ -11,10 +11,10 @@ import { Response, Request } from 'express';
 export class AuthController {
   constructor(private authService: AuthService, private mailService: MailService) {}
   // tokens lifetime
-  private readonly MONTH_IN_SECONDS = 30 * 24 * 60 * 60 * 1000;
+  private readonly MONTH_IN_SECONDS: number = 30 * 24 * 60 * 60 * 1000;
 
   // something
-  private readonly WRONG_SOMETHING = 'Something wrong';
+  private readonly WRONG_SOMETHING: string = 'Something wrong';
 
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, type: AuthDto })
@@ -27,7 +27,7 @@ export class AuthController {
         httpOnly: true,
       });
       return userData;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
   }
@@ -43,7 +43,7 @@ export class AuthController {
         httpOnly: true,
       });
       return userData;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
   }
@@ -55,7 +55,7 @@ export class AuthController {
     try {
       const activationLink = params.activationLink;
       await this.authService.activate(activationLink);
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
   }
@@ -70,7 +70,7 @@ export class AuthController {
         httpOnly: true,
       });
       return userData;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
   }
@@ -84,7 +84,7 @@ export class AuthController {
       const token = await this.authService.logout(refreshToken);
       res.clearCookie('refreshToken');
       return token;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
   }

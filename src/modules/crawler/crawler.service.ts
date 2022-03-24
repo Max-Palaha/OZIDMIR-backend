@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ContinentService } from '../continent/continent.service';
-import { S3Service } from '../core/s3/s3.service';
+import { S3Service } from '@core/s3/s3.service';
 import { CountryService } from '../country/country.service';
-import { SiteNumbeoService } from '../utils/crawlSites/numbeo/numbeo.site.service';
 import { UnsplashService } from '../utils/crawlSites/unsplash/unsplash.site.service';
 import { IScrapeContinents, IScrapeCountries, ICountries } from '../utils/crawlSites/worldPop/interfaces';
 import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';
@@ -12,19 +11,12 @@ export class CrawlerService {
   private readonly NOT_EXIST_CONTINENT = 'not exist continent';
   private readonly FOLDER_NAME_COUNTRIES = 'countries';
   constructor(
-    private numbeoService: SiteNumbeoService,
     private worldPopService: SiteWorldPopService,
     private unsplashService: UnsplashService,
     private continentService: ContinentService,
     private countryService: CountryService,
     private s3Service: S3Service,
   ) {}
-
-  async scrapeContent(url: string) {
-    await this.numbeoService.scrapeSite(url);
-
-    return true;
-  }
 
   async scrapeCountry(continentName: string): Promise<ICountries[]> {
     const continent = await this.continentService.findContinentByName(continentName);

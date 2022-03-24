@@ -45,7 +45,7 @@ export class CrawlerServiceUtils {
       }
 
       return currentPage;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -57,7 +57,7 @@ export class CrawlerServiceUtils {
       await this.releaseBrowser();
 
       return;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -68,25 +68,25 @@ export class CrawlerServiceUtils {
       const elementData: string = await elementProperty.jsonValue();
 
       return elementData;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  public async clickHandler(page: Page, element: ElementHandle<Element>) {
+  public async clickHandler(page: Page, element: ElementHandle<Element>): Promise<void> {
     try {
       await Promise.all([
         element.click(clickPage), // Clicking the link will indirectly cause a navigation
         page.waitForNavigation(), // The promise resolves after navigation has finished
       ]);
-    } catch (err) {
+    } catch (err: unknown) {
       await this.closePage(page);
 
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  public async inputHandler(page: Page, inputValue: string, selectorName: string) {
+  public async inputHandler(page: Page, inputValue: string, selectorName: string): Promise<void> {
     await page.focus(selectorName);
     await page.keyboard.type(inputValue);
     await Promise.all([page.keyboard.press(this.CONFIRM_KEYBOARD_NAME), page.waitForNavigation()]);
@@ -103,8 +103,8 @@ export class CrawlerServiceUtils {
       });
 
       return;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (error: unknown) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -114,11 +114,10 @@ export class CrawlerServiceUtils {
       if (pages.length === this.COUNT_OF_DEFAULT_PAGES) {
         await this.browser.close();
         this.isBrowserConnected = false;
-        this.browser = null;
       }
 
       return;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -135,14 +134,14 @@ export class CrawlerServiceUtils {
       await page.goto(url, this.pageOptions);
 
       return page;
-    } catch (err) {
+    } catch (err: unknown) {
       await this.closePage(page);
 
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  private async disableImages(page: Page) {
+  private async disableImages(page: Page): Promise<void> {
     try {
       await page.setRequestInterception(true);
       page.on('request', (request) => {
@@ -152,12 +151,12 @@ export class CrawlerServiceUtils {
           request.abort();
         }
       });
-    } catch (err) {
+    } catch (err: unknown) {
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  private async waitForConnectedBrowser() {
+  private async waitForConnectedBrowser(): Promise<Browser> {
     if (!this.browser) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -172,7 +171,7 @@ export class CrawlerServiceUtils {
     return this.browser;
   }
 
-  private async waitForAvailablePage() {
+  private async waitForAvailablePage(): Promise<void> {
     console.log(this.countOfOpenedPage);
     if (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {
       new Promise((resolve) => {

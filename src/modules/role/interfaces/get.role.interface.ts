@@ -1,4 +1,4 @@
-import { IObjectId } from '../../core/mongoose/interfaces';
+import { IObjectId } from '@core/mongoose/interfaces';
 
 export interface IRole {
   id: IObjectId;

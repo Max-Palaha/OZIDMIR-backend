@@ -3,18 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Country, CountryDocument } from './schemas/country.schema';
-import { Logger } from '../core/logger/helpers/logger.decorator';
-import { LoggerService } from '../core/logger/logger.service';
 import { ICountry, ICountryUpdatedFields, ICreateCountry } from './interfaces';
 import { dumpCountry } from './dump';
-import { IObjectId } from '../core/mongoose/interfaces';
+import { IObjectId } from '@core/mongoose/interfaces';
 
 @Injectable()
 export class CountryService {
-  constructor(
-    @Logger('CountryService') private logger: LoggerService,
-    @InjectModel(Country.name) private countryModel: Model<CountryDocument>,
-  ) {}
+  constructor(@InjectModel(Country.name) private countryModel: Model<CountryDocument>) {}
 
   async getCountries(): Promise<ICountry[]> {
     const countries = await this.countryModel.find().lean();

@@ -14,7 +14,7 @@ import { Server, Socket } from 'socket.io';
 import { IUser } from '../modules/users/interfaces';
 
 @WebSocketGateway()
-export class NotificationEvents implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger('AppGateway');
 
   handleDisconnect(client: Socket) {
@@ -25,7 +25,6 @@ export class NotificationEvents implements OnGatewayInit, OnGatewayConnection, O
   }
 
   @WebSocketServer() server: Server;
-
   afterInit() {
     this.logger.log('Initialized!');
   }

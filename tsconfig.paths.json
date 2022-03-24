@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@events/*": [
+        "src/events/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@helpers/*": [
+        "src/helpers/*"
+      ],
+      "@auth/*": [
+        "src/modules/auth/*"
+      ],
+      "@core/*": [
+        "src/modules/core/*"
+      ]
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { CountryService } from './country.service';
 import { CountryController } from './country.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Country, CountrySchema } from './schemas/country.schema';
-import { LoggerModule } from '../core/logger/logger.module';
+import { LoggerModule } from '@core/logger/logger.module';
 
 @Module({
   providers: [CountryService],

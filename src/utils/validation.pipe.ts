@@ -1,14 +1,14 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validate, ValidationError } from 'class-validator';
 import { ValidationException } from '../exception/validation.exception';
 @Injectable()
-export class ValidationPipe implements PipeTransform<any> {
-  async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
+export class ValidationPipe implements PipeTransform<unknown> {
+  async transform(value: string, metadata: ArgumentMetadata): Promise<unknown> {
     const result = plainToClass(metadata.metatype, value);
     const errors = await validate(result);
     if (errors.length) {
-      const messages = errors.map((err) => {
+      const messages = errors.map((err: ValidationError) => {
         return `${err.property} - ${Object.values(err.constraints).join(',')}`;
       });
       throw new ValidationException(messages);
