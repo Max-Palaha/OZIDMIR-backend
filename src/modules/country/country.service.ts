@@ -37,13 +37,7 @@ export class CountryService {
     .skip(filterDto.offset)
     .limit(filterDto.limit);
 
-    const countries = countriesDocument.map(dumpCountry);
-
-    if(!countries.length){
-      throw new HttpException(this.INAVALID_INPUT_DATA, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    
-    return countries;
+    return countriesDocument.map(dumpCountry);
     } catch(error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
