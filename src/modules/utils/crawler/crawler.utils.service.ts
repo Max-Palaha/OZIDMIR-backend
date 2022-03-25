@@ -7,7 +7,7 @@ import { clickPage, pageOptions, viewPort } from './helpers/crawler.options';
 @Injectable()
 export class CrawlerServiceUtils {
   // errors
-  private readonly BROWSER_CONNECTED_ERROR: string = "Can't connect to current browser";
+  private readonly BROWSER_CONNECTED_ERROR: string = 'Cann not connect to current browser';
   // values
   private readonly USER_AGENT: string = 'INSERT_USERAGENT';
   private readonly TIMEOUT: number = 20000;
@@ -15,7 +15,7 @@ export class CrawlerServiceUtils {
   private readonly DEFAULT_TIMEOUT_FOR_BROWSER: number = 3000;
   private readonly DEFAULT_COUNT_OF_PAGES_PER_BROWSER: number = 5;
   private readonly slowMo: number = 0;
-  private countOfOpenedPage = 0;
+  private countOfOpenedPage: number = 0;
   private readonly devTools: boolean = false;
   private readonly headless: boolean;
   private readonly viewPort: Viewport;
@@ -23,7 +23,7 @@ export class CrawlerServiceUtils {
   private browser: Browser;
   private isBrowserConnected: boolean;
   // INPUT HANDLER
-  private readonly CONFIRM_KEYBOARD_NAME = 'Enter';
+  private readonly CONFIRM_KEYBOARD_NAME: puppeteer.KeyInput = 'Enter';
 
   constructor(@Inject('HEADLESS') headless: boolean) {
     this.pageOptions = pageOptions;
@@ -32,7 +32,7 @@ export class CrawlerServiceUtils {
     this.isBrowserConnected = false;
   }
 
-  public async crawl(url: string, isDisableImages = true): Promise<Page> {
+  public async crawl(url: string, isDisableImages: boolean = true): Promise<Page> {
     try {
       if (!this.isBrowserConnected) {
         await this.startBrowser();
@@ -172,7 +172,6 @@ export class CrawlerServiceUtils {
   }
 
   private async waitForAvailablePage(): Promise<void> {
-    console.log(this.countOfOpenedPage);
     if (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {
       new Promise((resolve) => {
         while (this.countOfOpenedPage >= this.DEFAULT_COUNT_OF_PAGES_PER_BROWSER) {

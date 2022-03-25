@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Condition, FilterQuery, Model } from 'mongoose';
 
 import { Continent, ContinentDocument } from './schemas/continent.schema';
 import { TContinent } from './interfaces';
@@ -17,26 +17,26 @@ export class ContinentService {
     return continents.map(dumpContinents);
   }
 
-  async findContinentByName(name: string) {
-    const continent = await this.continentModel.findOne({ name }).lean();
+  async findContinentByName(name: string): Promise<ContinentDocument> {
+    const continent: ContinentDocument = await this.continentModel
+      .findOne({ name } as FilterQuery<ContinentDocument>)
+      .lean();
 
     return continent;
   }
 
   async createContinent(name: string): Promise<void> {
-    const existContinent: ContinentDocument[][] = await this.findContinentByName(name);
+    const existContinent: ContinentDocument = await this.findContinentByName(name);
 
     if (!existContinent) {
       throw new HttpException(this.CONTINENT_EXIST_ERROR, HttpStatus.BAD_REQUEST);
     }
 
-    const continent = await this.continentModel.create({ name });
-
-    await continent.save();
+    await this.continentModel.create({ name });
   }
 
   async createContinents(continents: string[]): Promise<void> {
-    const continentsPromise = continents.map(this.createContinent.bind(this));
+    const continentsPromise: Promise<void>[] = continents.map(this.createContinent.bind(this));
 
     await Promise.all(continentsPromise);
   }

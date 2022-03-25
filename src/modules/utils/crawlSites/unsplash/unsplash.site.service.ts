@@ -26,7 +26,7 @@ export class UnsplashService {
       await this.crawlerServiceUtil.closePage(page);
 
       return buffer;
-    } catch (error) {
+    } catch (error: unknown) {
       await this.crawlerServiceUtil.closePage(page);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

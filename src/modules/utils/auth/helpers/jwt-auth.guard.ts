@@ -1,6 +1,8 @@
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Observable } from 'node_modules/rxjs/dist/types';
+import { Request } from 'express';
 import { AuthServiceUtils } from '../auth.utils.service';
+import { IUser } from 'src/modules/users/interfaces';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -12,10 +14,10 @@ export class JwtAuthGuard implements CanActivate {
   constructor(private authServiceUtils: AuthServiceUtils) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const req = context.switchToHttp().getRequest();
+    const req: Request & { user: IUser } = context.switchToHttp().getRequest();
 
     try {
-      const authHeader = req.headers.authorization;
+      const authHeader: string = req.headers.authorization;
 
       if (!authHeader) {
         throw new HttpException(this.WRONG_UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
@@ -26,14 +28,14 @@ export class JwtAuthGuard implements CanActivate {
         throw new HttpException(this.UNKNOWN_ERRROR, HttpStatus.UNAUTHORIZED);
       }
 
-      const user = this.authServiceUtils.validateAccessToken(token);
+      const user: IUser = this.authServiceUtils.validateAccessToken(token);
       if (!user) {
         throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
       }
       req.user = user;
 
-      return user;
-    } catch (e) {
+      return true;
+    } catch (e: unknown) {
       throw new HttpException(this.WRONG_AUTH, HttpStatus.UNAUTHORIZED);
     }
   }

@@ -39,21 +39,11 @@ export class AuthServiceUtils {
     }
   }
 
-  validateAccessToken(token: string) {
-    try {
-      const userData = this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
-      return userData;
-    } catch (e) {
-      return null;
-    }
+  validateAccessToken(token: string): IUser {
+    return this.jwtService.verify(token, { secret: process.env.JWT_ACCESS_SECRET });
   }
 
-  validateRefreshToken(token: string) {
-    try {
-      const userData = this.jwtService.verify(token, { secret: process.env.JWT_REFRESH_SECRET });
-      return userData;
-    } catch (e) {
-      return null;
-    }
+  validateRefreshToken(token: string): IUser {
+    return this.jwtService.verify(token, { secret: process.env.JWT_REFRESH_SECRET });
   }
 }

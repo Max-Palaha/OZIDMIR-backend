@@ -31,17 +31,17 @@ export class MailService {
   }
 
   async sendActivationMail(to: string, link: string): Promise<void> {
-    const context = {
-      link,
-    };
     try {
+      const context: { link: string } = {
+        link,
+      };
       await this.send({
         to,
         subject: this.ACTIVATION_MAIL_SUBJECT,
         template: this.ACTIVATION_MAIL_PATH,
         context,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -55,7 +55,7 @@ export class MailService {
         template,
         context,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

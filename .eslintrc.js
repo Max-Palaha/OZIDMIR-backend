@@ -43,6 +43,7 @@ module.exports = {
     "@typescript-eslint/require-array-sort-compare": "error",
     "@typescript-eslint/restrict-plus-operands": "error",
     "@typescript-eslint/type-annotation-spacing": "error",
+    "@typescript-eslint/no-inferrable-types": "off",
     "@typescript-eslint/typedef": [
       "error",
       {

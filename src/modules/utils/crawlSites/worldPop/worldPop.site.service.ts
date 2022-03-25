@@ -28,11 +28,11 @@ export class SiteWorldPopService {
   public async scrapePageContinents(): Promise<IScrapeContinents> {
     const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL);
     try {
-      const continentsObj = await this.scrapeContinents(page);
+      const continentsObj: IScrapeContinents = await this.scrapeContinents(page);
       await this.crawlerServiceUtil.closePage(page);
 
       return continentsObj;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -61,7 +61,7 @@ export class SiteWorldPopService {
         countryElements,
         continent,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       await this.crawlerServiceUtil.closePage(page);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -107,22 +107,16 @@ export class SiteWorldPopService {
 
         const { medianAge, medianManAge, medianWomanAge } = await pageCountry.$$eval(this.COUNTRY_AGE, (els) => {
           if (els[0]) {
-            const medianAge: string = els[0].textContent;
-            const medianManAge: string = els[1].textContent;
-            const medianWomanAge: string = els[2].textContent;
             return {
-              medianAge,
-              medianManAge,
-              medianWomanAge,
+              medianAge: els[0].textContent,
+              medianManAge: els[1].textContent,
+              medianWomanAge: els[2].textContent,
             };
           } else {
-            const medianAge: any = null;
-            const medianManAge: any = null;
-            const medianWomanAge: any = null;
             return {
-              medianAge,
-              medianManAge,
-              medianWomanAge,
+              medianAge: null,
+              medianManAge: null,
+              medianWomanAge: null,
             };
           }
         });
@@ -145,13 +139,13 @@ export class SiteWorldPopService {
       await this.crawlerServiceUtil.closePage(page);
 
       return arrayOfCountries;
-    } catch (error) {
+    } catch (error: unknown) {
       await this.crawlerServiceUtil.closePage(page);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  private async scrapeContinents(page: Page) {
+  private async scrapeContinents(page: Page): Promise<IScrapeContinents> {
     try {
       const mainLinks: ElementHandle[] = await page.$$(this.NAVIGATION_ID);
       const continentLink: ElementHandle<Element> = Array.from(mainLinks)[this.LOCL_CONTINENT];
@@ -169,7 +163,7 @@ export class SiteWorldPopService {
         continents: Array.from(continents),
         continentElements: continentElements,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       await this.crawlerServiceUtil.closePage(page);
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IObjectId, mongoObjectId } from '@core/mongoose/interfaces';
 import { Role } from '../../role/schemas/role.schema';
@@ -50,4 +51,4 @@ export class User {
   createdAt: Date;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema: mongoose.Schema<Document> = SchemaFactory.createForClass(User);

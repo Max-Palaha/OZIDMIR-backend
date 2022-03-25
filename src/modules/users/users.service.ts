@@ -20,14 +20,12 @@ export class UsersService {
   async createUser(createUserDto: IUserCreate): Promise<IUser> {
     try {
       const role: IRole = await this.roleService.getRoleByName('USER');
-      const user = await this.userModel.create({
+      const user: UserDocument = await this.userModel.create({
         ...createUserDto,
         roles: [role.id],
       });
 
-      await user.save();
-
-      return dumpUser(await this.getUserByEmail(createUserDto.email));
+      return dumpUser(user);
     } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
