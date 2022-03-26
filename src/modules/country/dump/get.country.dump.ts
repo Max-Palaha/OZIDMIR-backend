@@ -11,7 +11,7 @@ export default (country: CountryDocument): ICountry => {
     },
     population: country.population,
     populationRank: country.populationRank,
-    populationAge:{
+    populationAge: {
       medianAge: country.medianAge,
       medianManAge: country.medianManAge,
       medianWomanAge: country.medianWomanAge,

@@ -1,32 +1,22 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../utils/auth/helpers/roles-auth.decorator';
-import { RolesGuard } from '../utils/auth/helpers/roles.guard';
+import { Roles } from '@auth/helpers/roles-auth.decorator';
+import { RolesGuard } from '@auth/helpers/roles.guard';
+import { ICountries } from '../../libs/crawler/sites/worldPop/interfaces';
 import { CrawlerService } from './crawler.service';
 import { ScrapeCountryDto } from './dto/scrape.country.dto';
-import { ScrapeDto } from './dto/scrape.crawler.dto';
 
 @ApiTags('Crawler')
 @Controller('crawler')
 export class CrawlerController {
   constructor(private crawlerService: CrawlerService) {}
 
-  @ApiOperation({ summary: 'scrape data from any site' })
-  @ApiResponse({ status: 200 })
-  @Roles('ADMIN')
-  @UseGuards(RolesGuard)
-  @Post()
-  scrapeContentByUrl(@Body() scrapeDto: ScrapeDto) {
-    const { url } = scrapeDto;
-    return this.crawlerService.scrapeContent(url);
-  }
-
   @ApiOperation({ summary: 'scrape continents' })
   @ApiResponse({ status: 200 })
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post('continents')
-  scrapeContinents() {
+  scrapeContinents(): Promise<string[]> {
     return this.crawlerService.scrapeContinents();
   }
 
@@ -35,7 +25,7 @@ export class CrawlerController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post('country')
-  scrapeCountry(@Body() scrapeDto: ScrapeCountryDto) {
+  scrapeCountry(@Body() scrapeDto: ScrapeCountryDto): Promise<ICountries[]> {
     const { continent } = scrapeDto;
 
     return this.crawlerService.scrapeCountry(continent);
@@ -46,7 +36,7 @@ export class CrawlerController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post('countries/details')
-  scrapeInfoAboutCountry() {
+  scrapeInfoAboutCountry(): Promise<boolean> {
     return this.crawlerService.scrapeInfoAboutCountry();
   }
 
@@ -55,7 +45,7 @@ export class CrawlerController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post('countries/images')
-  scrapeImagesByCountries() {
+  scrapeImagesByCountries(): Promise<boolean> {
     return this.crawlerService.scrapeImagesByCountries();
   }
 }

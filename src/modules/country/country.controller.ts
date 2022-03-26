@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CountryService } from './country.service';
-import { CountryDto, PaginationParamDto } from './dto';
+import { CountryDto } from './dto';
 import { CountriesDto } from './dto/get.countries.dto';
 import { ICountry } from './interfaces';
 

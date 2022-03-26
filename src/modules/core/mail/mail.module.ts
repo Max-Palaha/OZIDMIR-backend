@@ -10,7 +10,7 @@ import * as path from 'path';
       useFactory: () => ({
         transport: {
           host: process.env.SMTP_HOST,
-          port: +process.env.SMTP_PORT,
+          port: Number(process.env?.SMTP_PORT || 587),
           secure: false,
           auth: {
             user: process.env.SMTP_EMAIL,

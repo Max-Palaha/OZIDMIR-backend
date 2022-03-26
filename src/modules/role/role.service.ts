@@ -6,8 +6,8 @@ import { Model } from 'mongoose';
 import { dumpRole } from './dump';
 import { IRole } from './interfaces';
 import getRoleDump from './dump/get.role.dump';
-import { Logger } from '../core/logger/helpers/logger.decorator';
-import { LoggerService } from '../core/logger/logger.service';
+import { Logger } from '@core/logger/helpers/logger.decorator';
+import { LoggerService } from '@core/logger/logger.service';
 
 @Injectable()
 export class RoleService {
@@ -20,22 +20,21 @@ export class RoleService {
 
   async createRole(createRoleDto: CreateRoleDto): Promise<boolean> {
     try {
-      const role = await this.roleModel.create(createRoleDto);
-      await role.save();
+      await this.roleModel.create(createRoleDto);
 
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async getRoles(): Promise<IRole[]> {
-    const roles = await this.roleModel.find().lean();
+    const roles: RoleDocument[] = await this.roleModel.find().lean();
     return roles.map(dumpRole);
   }
 
   async getRoleByName(name: string): Promise<IRole> {
-    const role = await this.roleModel.findOne({ name }).lean();
+    const role: RoleDocument = await this.roleModel.findOne({ name }).lean();
     return getRoleDump(role);
   }
 }

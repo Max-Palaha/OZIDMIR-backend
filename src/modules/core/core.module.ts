@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoModule } from './mongoose/mongoose.module';
 import { MailModule } from './mail/mail.module';
-import configuration from '../../helpers/configuration';
+import configuration from '@common/helpers/configuration';
 
 @Module({
   imports: [

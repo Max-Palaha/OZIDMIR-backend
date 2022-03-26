@@ -1,21 +1,20 @@
-import { MailerService } from '@nestjs-modules/mailer';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { IUser, IUserEmail } from '../../users/interfaces';
-import { ISendMail } from './interfaces';
 
 @Injectable()
 export class MailService {
   // sendUserResetPassword
-  private readonly RESET_PASSWORD_SUBJECT = 'Reset your OZIMIDR password';
-  private readonly RESET_PASSWORD_PATH = './templates/resetPassword';
-  private readonly ACTIVATION_MAIL_SUBJECT = 'Activation account by mail';
-  private readonly ACTIVATION_MAIL_PATH = './templates/activationMail';
-  private readonly DEFAULT_USER = 'OZIMIDR user';
+  private readonly RESET_PASSWORD_SUBJECT: string = 'Reset your OZIMIDR password';
+  private readonly RESET_PASSWORD_PATH: string = './templates/resetPassword';
+  private readonly ACTIVATION_MAIL_SUBJECT: string = 'Activation account by mail';
+  private readonly ACTIVATION_MAIL_PATH: string = './templates/activationMail';
+  private readonly DEFAULT_USER: string = 'OZIMIDR user';
 
   constructor(private mailerService: MailerService) {}
 
   async sendUserResetPassword(user: IUser, code: string): Promise<void> {
-    const url = `${process.env.APP_PATH}/auth/confirm?code=${code}`;
+    const url: string = `${process.env.APP_PATH}/auth/confirm?code=${code}`;
     const context: IUserEmail = {
       url,
       firstName: user.firstName || this.DEFAULT_USER,
@@ -31,36 +30,33 @@ export class MailService {
   }
 
   async sendActivationMail(to: string, link: string): Promise<void> {
-    const context = {
-      link,
-    };
     try {
+      const context: { link: string } = {
+        link,
+      };
       await this.send({
         to,
         subject: this.ACTIVATION_MAIL_SUBJECT,
         template: this.ACTIVATION_MAIL_PATH,
         context,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  private async send({ context, template, to, subject }: ISendMail): Promise<void> {
+  private async send(mailOptions: ISendMailOptions): Promise<void> {
     try {
       await this.mailerService.sendMail({
-        to,
         from: process.env.SMTP_EMAIL,
-        subject,
-        template,
-        context,
+        ...mailOptions,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async sendUserConfirmation() {
+  async sendUserConfirmation(): Promise<void> {
     //const url = `example.com/auth/confirm?token=${token}`;
 
     await this.mailerService.sendMail({

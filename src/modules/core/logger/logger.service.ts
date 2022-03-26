@@ -6,15 +6,16 @@ import { Injectable, Scope } from '@nestjs/common';
 export class LoggerService {
   private prefix?: string;
 
-  log(message: string) {
-    let formattedMessage = message;
+  log(message: string): void {
+    let formattedMessage: string = message;
 
     if (this.prefix) {
       formattedMessage = `[${this.prefix}] ${message}`;
     }
+    console.log(formattedMessage);
   }
 
-  setPrefix(prefix: string) {
+  setPrefix(prefix: string): void {
     this.prefix = prefix;
   }
 }

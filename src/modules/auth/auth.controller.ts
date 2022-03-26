@@ -1,98 +1,79 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from '../users/dto';
-import { AuthService } from './auth.service';
-import { AuthDto, ParamActivationLinkDto } from './dto';
-import { MailService } from '../core/mail/mail.service';
 import { Response, Request } from 'express';
+import { CreateUserDto } from '@users/dto';
+import { MailService } from '@core/mail/mail.service';
+import { Cookieable } from '@libs/cookie/decorators/cookieable';
+import { REFRESH_TOKEN } from '@libs/cookie/constants/cookie.fields.constants';
+import { CookieEvict } from '@libs/cookie/decorators/cookieEvict';
+import { cookieSymbol } from '@common/constants/metadata.symbols.constants';
+import { MetadataResponse } from '@common/decorators/metadata.response';
+import { AuthDto, ParamActivationLinkDto } from './dto';
+import { AuthService } from './auth.service';
+import { IAuth } from './interfaces';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService, private mailService: MailService) {}
-  // tokens lifetime
-  private readonly MONTH_IN_SECONDS = 30 * 24 * 60 * 60 * 1000;
-
-  // something
-  private readonly WRONG_SOMETHING = 'Something wrong';
 
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/login')
-  async login(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
-    try {
-      const userData = await this.authService.login(userDto);
-      res.cookie('refreshToken', userData.tokens.refreshToken, {
-        maxAge: this.MONTH_IN_SECONDS,
-        httpOnly: true,
-      });
-      return userData;
-    } catch (error) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
-    }
+  @Cookieable(REFRESH_TOKEN)
+  async login(
+    @Body() userDto: CreateUserDto,
+    @MetadataResponse([cookieSymbol]) @Res({ passthrough: true }) _res: Response,
+  ): Promise<IAuth> {
+    return this.authService.login(userDto);
   }
 
   @ApiOperation({ summary: 'User registration' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/registration')
-  async registration(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
-    try {
-      const userData = await this.authService.registration(userDto);
-      res.cookie('refreshToken', userData.tokens.refreshToken, {
-        maxAge: this.MONTH_IN_SECONDS,
-        httpOnly: true,
-      });
-      return userData;
-    } catch (error) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
-    }
+  @Cookieable(REFRESH_TOKEN)
+  async registration(
+    @Body() userDto: CreateUserDto,
+    @MetadataResponse([cookieSymbol]) @Res({ passthrough: true }) _res: Response,
+  ): Promise<IAuth> {
+    return this.authService.registration(userDto);
   }
 
   @ApiOperation({ summary: 'User activate' })
-  @ApiResponse({ status: 200, type: AuthDto })
+  @ApiResponse({ status: 200 })
   @Get('/activate/:activationLink')
-  async activate(@Param() params: ParamActivationLinkDto) {
-    try {
-      const activationLink = params.activationLink;
-      await this.authService.activate(activationLink);
-    } catch (error) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
-    }
+  async activate(@Param() params: ParamActivationLinkDto): Promise<void> {
+    const activationLink: string = params.activationLink;
+    return this.authService.activate(activationLink);
   }
 
-  @Post('/refresh')
-  async refresh(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
-    try {
-      const { refreshToken } = req.cookies;
-      const userData = await this.authService.refresh(refreshToken);
-      res.cookie('refreshToken', userData.tokens.refreshToken, {
-        maxAge: this.MONTH_IN_SECONDS,
-        httpOnly: true,
-      });      
-      return userData;
-    } catch (error) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
-    }
+  @ApiOperation({ summary: 'Refresh token' })
+  @Get('/refresh')
+  @ApiResponse({ status: 200, type: AuthDto })
+  async refresh(
+    @MetadataResponse([cookieSymbol]) @Res({ passthrough: true }) _res: Response,
+    @Req() req: Request,
+  ): Promise<IAuth> {
+    const { refreshToken } = req.cookies;
+    return this.authService.refresh(refreshToken);
   }
 
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/logout')
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    try {
-      const { refreshToken } = req.cookies;
-      const token = await this.authService.logout(refreshToken);
-      res.clearCookie('refreshToken');
-      return token;
-    } catch (error) {
-      throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.BAD_REQUEST);
-    }
+  @CookieEvict(REFRESH_TOKEN)
+  async logout(
+    @Req() req: Request,
+    @MetadataResponse([cookieSymbol]) @Res({ passthrough: true }) _res: Response,
+  ): Promise<boolean> {
+    const { refreshToken } = req.cookies;
+    return this.authService.logout(refreshToken);
   }
 
   @ApiOperation({ summary: 'User resetPass' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Put('/reset/password')
-  resetPass() {
+  async resetPassword(): Promise<void> {
     return this.mailService.sendUserConfirmation();
   }
 }

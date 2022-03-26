@@ -3,7 +3,7 @@ import { ContinentService } from './continent.service';
 import { ContinentController } from './continent.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Continent, ContinentSchema } from './schemas/continent.schema';
-import { LoggerModule } from '../core/logger/logger.module';
+import { LoggerModule } from '@core/logger/logger.module';
 
 @Module({
   providers: [ContinentService],

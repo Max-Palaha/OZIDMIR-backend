@@ -8,10 +8,10 @@ import { IObjectId } from '../mongoose/interfaces';
 export class S3Service {
   constructor(@InjectAwsService(S3) private readonly s3: S3) {}
 
-  async uploadImage(file: Buffer, folder: string, subfolder: IObjectId) {
+  async uploadImage(file: Buffer, folder: string, subfolder: IObjectId): Promise<string> {
     try {
-      const fileName = uuid();
-      const params = {
+      const fileName: string = uuid();
+      const params: S3.PutObjectRequest = {
         Bucket: `${process.env.AWS_BUCKET}-${process.env.NODE_ENV}`,
         Body: file,
         Key: `${folder}/${subfolder}/${fileName}.jpg`,
@@ -20,7 +20,7 @@ export class S3Service {
       await this.s3.upload(params).promise();
 
       return fileName;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

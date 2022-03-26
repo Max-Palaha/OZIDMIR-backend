@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { IObjectId } from '../../core/mongoose/interfaces';
+import { IObjectId } from '@core/mongoose/interfaces';
 
-export type ContinentDocument = Continent & Document;
+export type ContinentDocument = Continent & mongoose.Document;
 
 @Schema()
 export class Continent {
@@ -14,4 +15,4 @@ export class Continent {
   name: string;
 }
 
-export const ContinentSchema = SchemaFactory.createForClass(Continent);
+export const ContinentSchema: mongoose.Schema<ContinentDocument> = SchemaFactory.createForClass(Continent);

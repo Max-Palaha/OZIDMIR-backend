@@ -5,11 +5,12 @@ import { dumpUser } from './dump';
 import { IUser, IUserCreate, IUserSearch, IUserUpdatedFields } from './interfaces';
 import { User, UserDocument } from './schemas/user.schema';
 import { RoleService } from '../role/role.service';
-import { S3Service } from '../core/s3/s3.service';
+import { S3Service } from '@core/s3/s3.service';
+import { IRole } from '../role/interfaces';
 
 @Injectable()
 export class UsersService {
-  private readonly USER_NOT_EXIST = 'User not exist';
+  private readonly USER_NOT_EXIST: string = 'User not exist';
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private roleService: RoleService,
@@ -18,34 +19,32 @@ export class UsersService {
 
   async createUser(createUserDto: IUserCreate): Promise<IUser> {
     try {
-      const role = await this.roleService.getRoleByName('USER');
-      const user = await this.userModel.create({
+      const role: IRole = await this.roleService.getRoleByName('USER');
+      const user: UserDocument = await this.userModel.create({
         ...createUserDto,
         roles: [role.id],
       });
 
-      await user.save();
-
-      return dumpUser(await this.getUserByEmail(createUserDto.email));
-    } catch (error) {
+      return dumpUser(user);
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async getUsers(): Promise<IUser[]> {
-    const users = await this.userModel.find().populate('roles').lean();
+    const users: UserDocument[] = await this.userModel.find().populate('roles').lean();
 
     return users.map(dumpUser);
   }
 
   async getUserPassword(email: string): Promise<string> {
-    const user = await this.userModel.findOne({ email }).select('password').lean();
+    const user: UserDocument = await this.userModel.findOne({ email }).select('password').lean();
 
     return user.password;
   }
 
   async getUserByEmail(email: string): Promise<UserDocument> {
-    const user = await this.userModel.findOne({ email }).populate('roles').lean();
+    const user: UserDocument = await this.userModel.findOne({ email }).populate('roles').lean();
 
     if (!user) {
       throw new HttpException(this.USER_NOT_EXIST, HttpStatus.NOT_FOUND);
@@ -55,7 +54,7 @@ export class UsersService {
   }
 
   async checkExistUserByEmail(email: string): Promise<boolean> {
-    const user = await this.userModel.findOne({ email }).select('email').lean();
+    const user: UserDocument = await this.userModel.findOne({ email }).select('email').lean();
 
     if (!user) {
       return false;
@@ -65,22 +64,22 @@ export class UsersService {
   }
 
   async getUserByActivationLink(activationLink: string): Promise<IUser> {
-    const user = await this.userModel.findOne({ activationLink });
+    const user: UserDocument = await this.userModel.findOne({ activationLink });
 
     return dumpUser(user);
   }
 
-  async updateUser(fieldsBySearch: IUserSearch, updatedFileds: IUserUpdatedFields) {
+  async updateUser(fieldsBySearch: IUserSearch, updatedFileds: IUserUpdatedFields): Promise<void> {
     try {
       await this.userModel.updateOne(fieldsBySearch, updatedFileds);
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async uploadPhoto(file: Express.Multer.File, user: IUser) {
+  async uploadPhoto(file: Express.Multer.File, user: IUser): Promise<void> {
     const { id } = user;
-    const avatar = await this.s3Service.uploadImage(file.buffer, 'profile', id);
+    const avatar: string = await this.s3Service.uploadImage(file.buffer, 'profile', id);
     await this.updateUser({ _id: id }, { avatar });
   }
 }
