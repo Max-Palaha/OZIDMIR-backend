@@ -2,7 +2,7 @@ import { prefixesForLoggers } from './logger.decorator';
 import { Provider } from '@nestjs/common';
 import { LoggerService } from '../logger.service';
 
-function loggerFactory(logger: LoggerService, prefix: string): Promise<LoggerService> {
+function loggerFactory(logger: LoggerService, prefix: string): LoggerService {
   if (prefix) {
     logger.setPrefix(prefix);
   }
@@ -12,7 +12,7 @@ function loggerFactory(logger: LoggerService, prefix: string): Promise<LoggerSer
 const createLoggerProvider = (prefix: string): Provider<LoggerService> => {
   return {
     provide: `LoggerService${prefix}`,
-    useFactory: (logger) => loggerFactory(logger, prefix),
+    useFactory: (logger: LoggerService): LoggerService => loggerFactory(logger, prefix),
     inject: [LoggerService],
   };
 };

@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IObjectId, mongoObjectId } from '@core/mongoose/interfaces';
 import { Role } from '../../role/schemas/role.schema';
 
-export type UserDocument = User & Document;
+export type UserDocument = User & mongoose.Document;
 
 @Schema({ timestamps: true })
 export class User {
@@ -51,4 +51,4 @@ export class User {
   createdAt: Date;
 }
 
-export const UserSchema: mongoose.Schema<Document> = SchemaFactory.createForClass(User);
+export const UserSchema: mongoose.Schema<UserDocument> = SchemaFactory.createForClass(User);

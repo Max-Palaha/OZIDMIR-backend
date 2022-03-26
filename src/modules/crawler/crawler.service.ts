@@ -5,8 +5,8 @@ import { CountryService } from '../country/country.service';
 import { UnsplashService } from '../utils/crawlSites/unsplash/unsplash.site.service';
 import { IScrapeContinents, IScrapeCountries, ICountries } from '../utils/crawlSites/worldPop/interfaces';
 import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';
-import { ContinentDocument } from '../continent/schemas/continent.schema';
 import { ICountry, ICountryUpdatedFields } from '../country/interfaces';
+import { ContinentDocument } from '../continent/schemas/continent.schema';
 
 @Injectable()
 export class CrawlerService {
@@ -21,7 +21,7 @@ export class CrawlerService {
   ) {}
 
   async scrapeCountry(continentName: string): Promise<ICountries[]> {
-    const continent = await this.continentService.findContinentByName(continentName);
+    const continent: ContinentDocument = await this.continentService.findContinentByName(continentName);
 
     if (!continent) {
       throw new HttpException(this.NOT_EXIST_CONTINENT, HttpStatus.BAD_REQUEST);
@@ -70,7 +70,7 @@ export class CrawlerService {
       await Promise.all(countriesPromises);
 
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

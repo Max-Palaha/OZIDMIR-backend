@@ -1,12 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { mongoObjectId } from '@core/mongoose/interfaces';
+import mongoose from 'mongoose';
+import { IObjectId, mongoObjectId } from '@core/mongoose/interfaces';
 import { User } from '../../users/schemas/user.schema';
 
-export type TokenDocument = Token & Document;
+export type TokenDocument = Token & mongoose.Document;
 
 @Schema()
 export class Token {
+  @ApiProperty({ example: 'ObjectId', description: 'id' })
+  _id: IObjectId;
+
   @ApiProperty({ example: 'user', description: 'user' })
   @Prop({ type: mongoObjectId, ref: 'User' })
   user: User;
@@ -16,4 +20,4 @@ export class Token {
   refreshToken: string;
 }
 
-export const TokenSchema = SchemaFactory.createForClass(Token);
+export const TokenSchema: mongoose.Schema<TokenDocument> = SchemaFactory.createForClass(Token);

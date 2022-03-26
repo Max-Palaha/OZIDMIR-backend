@@ -1,10 +1,8 @@
-export const HEADLESS: string = 'HEADLESS';
-interface IProvider {
-  provide: string;
-  useValue: boolean;
-}
+import { Provider } from '@nestjs/common';
 
-export const headlessProvider: IProvider = {
+export const HEADLESS: string = 'HEADLESS';
+
+export const headlessProvider: Provider = {
   provide: HEADLESS,
   useValue: false,
 };

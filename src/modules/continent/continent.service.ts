@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Condition, FilterQuery, Model } from 'mongoose';
-
+import { Model } from 'mongoose';
 import { Continent, ContinentDocument } from './schemas/continent.schema';
 import { TContinent } from './interfaces';
 import { dumpContinents } from './dump';
@@ -9,7 +8,7 @@ import { dumpContinents } from './dump';
 @Injectable()
 export class ContinentService {
   private readonly CONTINENT_EXIST_ERROR: string = 'Continent already exist';
-  constructor(@InjectModel(Continent.name) private continentModel: Model<ContinentDocument[]>) {}
+  constructor(@InjectModel(Continent.name) private continentModel: Model<ContinentDocument>) {}
 
   async getContinents(): Promise<TContinent[]> {
     const continents: ContinentDocument[] = await this.continentModel.find().lean();
@@ -18,9 +17,7 @@ export class ContinentService {
   }
 
   async findContinentByName(name: string): Promise<ContinentDocument> {
-    const continent: ContinentDocument = await this.continentModel
-      .findOne({ name } as FilterQuery<ContinentDocument>)
-      .lean();
+    const continent: ContinentDocument = await this.continentModel.findOne({ name }).lean();
 
     return continent;
   }

@@ -1,7 +1,6 @@
-import { MailerService } from '@nestjs-modules/mailer';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { IUser, IUserEmail } from '../../users/interfaces';
-import { ISendMail } from './interfaces';
 
 @Injectable()
 export class MailService {
@@ -46,14 +45,11 @@ export class MailService {
     }
   }
 
-  private async send({ context, template, to, subject }: ISendMail): Promise<void> {
+  private async send(mailOptions: ISendMailOptions): Promise<void> {
     try {
       await this.mailerService.sendMail({
-        to,
         from: process.env.SMTP_EMAIL,
-        subject,
-        template,
-        context,
+        ...mailOptions,
       });
     } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);

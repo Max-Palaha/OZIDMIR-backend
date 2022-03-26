@@ -10,6 +10,7 @@ import { AuthServiceUtils } from '../utils/auth/auth.utils.service';
 import { IAuth, IToken } from './interfaces';
 import { UserDocument } from '../users/schemas/user.schema';
 import { TokenDocument } from '../tokens/schemas/token.schema';
+import { IUser } from '../users/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -80,8 +81,8 @@ export class AuthService {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
 
-    const userData = this.authServiceUtils.validateRefreshToken(refreshToken);
-    const tokenFromDb: TokenDocument = await this.tokensService.findToken(refreshToken);
+    const userData: IUser = this.authServiceUtils.validateRefreshToken(refreshToken);
+    const tokenFromDb: TokenDocument = await this.tokensService.findRefreshToken(refreshToken);
 
     if (!userData || !tokenFromDb) {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
@@ -96,8 +97,7 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: string) {
-    const token = await this.tokensService.removeToken(refreshToken);
-    return token;
+  async logout(refreshToken: string): Promise<void> {
+    return this.tokensService.removeToken(refreshToken);
   }
 }

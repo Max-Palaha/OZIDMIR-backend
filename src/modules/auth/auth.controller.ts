@@ -79,12 +79,12 @@ export class AuthController {
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Post('/logout')
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<boolean> {
     try {
       const { refreshToken } = req.cookies;
-      const token = await this.authService.logout(refreshToken);
+      await this.authService.logout(refreshToken);
       res.clearCookie('refreshToken');
-      return token;
+      return true;
     } catch (error: unknown) {
       throw new HttpException(error || this.WRONG_SOMETHING, HttpStatus.UNAUTHORIZED);
     }
@@ -93,7 +93,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User resetPass' })
   @ApiResponse({ status: 200, type: AuthDto })
   @Put('/reset/password')
-  resetPass(): Promise<void> {
+  async resetPassword(): Promise<void> {
     return this.mailService.sendUserConfirmation();
   }
 }

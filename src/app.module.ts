@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HttpErrorFilterProvider, LoggerInterceptorProvider } from './utils/global.providers';
+import { HttpErrorFilterProvider, LoggerInterceptorProvider } from './helpers/global.providers';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { UsersModule } from './modules/users/users.module';
 import { RoleModule } from './modules/role/role.module';

@@ -53,7 +53,9 @@ export class SiteWorldPopService {
       const elementTables: ElementHandle<Element>[] = await page.$$(this.COUNTRY_TABLE_CLASS);
       const countryTableElement: ElementHandle<Element> = elementTables[this.IC];
       const countryElements: ElementHandle<Element>[] = await countryTableElement.$$(this.COUNTRY_RAWS);
-      const countries: ICountries[] = await Promise.all(countryElements.map(this.handleCountriesElements.bind(this)));
+      const countries: ICountries[] = (await Promise.all(
+        countryElements.map(this.handleCountriesElements.bind(this)),
+      )) as ICountries[];
       await this.crawlerServiceUtil.closePage(page);
 
       return {

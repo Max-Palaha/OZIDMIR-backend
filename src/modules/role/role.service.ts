@@ -20,11 +20,10 @@ export class RoleService {
 
   async createRole(createRoleDto: CreateRoleDto): Promise<boolean> {
     try {
-      const role = await this.roleModel.create(createRoleDto);
-      await role.save();
+      await this.roleModel.create(createRoleDto);
 
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

@@ -1,19 +1,29 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { ValidationException } from '../exception/validation.exception';
 
+interface IErrorInfo {
+  code: number;
+  timestamp: string;
+  path: string;
+  method: string;
+  message: string | null;
+  validation: string[];
+  stack: string[];
+}
 @Catch(HttpException)
 export class HttpErrorFilter implements ExceptionFilter {
-  catch(exception: HttpException & ValidationException, host: ArgumentsHost) {
+  catch(exception: HttpException & ValidationException, host: ArgumentsHost): void {
     const ctx: HttpArgumentsHost = host.switchToHttp();
-    const request = ctx.getRequest();
-    const response = ctx.getResponse();
+    const request: Request = ctx.getRequest();
+    const response: Response = ctx.getResponse();
     const status: number = exception?.getStatus();
     const validation: string[] = exception.messages || [];
     const { stack } = exception;
     const stacks: string[] = stack ? stack.split('\n').map(this.reformStack).filter(Boolean) : [];
 
-    const errorResult = {
+    const errorResult: IErrorInfo = {
       code: status,
       timestamp: new Date().toLocaleDateString(),
       path: request.url,

@@ -2,7 +2,7 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder, OpenAPIObject } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ValidationPipe } from './utils/validation.pipe';
+import { ValidationPipe } from './helpers/validation.pipe';
 import * as cookieParser from 'cookie-parser';
 import { SocketAdapter } from './helpers/socket.adapter';
 
@@ -16,7 +16,7 @@ async function bootstrap(): Promise<void> {
   app.useWebSocketAdapter(new SocketAdapter(app));
   app.use(cookieParser());
   app.enableCors({
-    origin: function (origin, callback) {
+    origin: function (origin: string, callback: (err: Error, origin?: boolean) => void) {
       if (whitelist.includes(origin)) {
         callback(null, true);
       } else {

@@ -17,15 +17,15 @@ import { IUser } from '../modules/users/interfaces';
 export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger('AppGateway');
 
-  handleDisconnect(client: Socket) {
+  handleDisconnect(client: Socket): void {
     this.logger.log(`Client disconnected ${client.id}`);
   }
-  handleConnection(client: Socket) {
+  handleConnection(client: Socket): void {
     this.logger.log(`Client connected ${client.id}`);
   }
 
   @WebSocketServer() server: Server;
-  afterInit() {
+  afterInit(): void {
     this.logger.log('Initialized!');
   }
 
@@ -37,7 +37,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
   @SubscribeMessage('joinRoom')
-  joinRoom(client: Socket, user: IUser | undefined) {
+  joinRoom(client: Socket, user: IUser | undefined): void {
     if (user) {
       client.join(user.id.toString());
     }

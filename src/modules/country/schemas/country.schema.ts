@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import mongoose from 'mongoose';
 import { Continent } from '../../continent/schemas/continent.schema';
 import { mongoObjectId, IObjectId } from '@core/mongoose/interfaces';
 
-export type CountryDocument = Country & Document;
+export type CountryDocument = Country & mongoose.Document;
 
 @Schema()
 export class Country {
@@ -55,4 +56,4 @@ export class Country {
   continent: Continent;
 }
 
-export const CountrySchema = SchemaFactory.createForClass(Country);
+export const CountrySchema: mongoose.Schema<CountryDocument> = SchemaFactory.createForClass(Country);
