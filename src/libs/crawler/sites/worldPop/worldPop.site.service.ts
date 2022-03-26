@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ElementHandle, Page } from 'puppeteer';
 import { ICountryUpdatedFields } from 'src/modules/country/interfaces';
-import { CrawlerServiceUtils } from '../../crawler/crawler.utils.service';
+import { CrawlerService } from '../../crawler.service';
 import { IScrapeCountries, IScrapeContinents, ICountries } from './interfaces';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class SiteWorldPopService {
 
   private readonly COUNTRY_RAWS: string = 'tr';
   private readonly IC: number = 0; // country index of table in array
-  constructor(private crawlerServiceUtil: CrawlerServiceUtils) {}
+  constructor(private crawlerServiceUtil: CrawlerService) {}
 
   public async scrapePageContinents(): Promise<IScrapeContinents> {
     const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL);

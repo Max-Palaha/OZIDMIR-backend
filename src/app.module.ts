@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HttpErrorFilterProvider, LoggerInterceptorProvider } from './helpers/global.providers';
+import { HttpErrorFilterProvider, LoggerInterceptorProvider } from './common/helpers/global.providers';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { UsersModule } from './modules/users/users.module';
 import { RoleModule } from './modules/role/role.module';
@@ -10,7 +10,7 @@ import { TokensModule } from './modules/tokens/tokens.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
 import { S3, SharedIniFileCredentials } from 'aws-sdk';
 import { CsvParserModule } from './modules/core/csv-parser/csv-parser.module';
-import { EventsGateway } from './events/events.gateway';
+import { EventsGateway } from '@common/events/events.gateway';
 @Module({
   imports: [
     CoreModule,

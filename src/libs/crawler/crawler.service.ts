@@ -5,7 +5,7 @@ import * as puppeteer from 'puppeteer';
 import { clickPage, pageOptions, viewPort } from './helpers/crawler.options';
 
 @Injectable()
-export class CrawlerServiceUtils {
+export class CrawlerService {
   // errors
   private readonly BROWSER_CONNECTED_ERROR: string = 'Cann not connect to current browser';
   // values

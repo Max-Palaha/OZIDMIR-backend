@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ContinentService } from '../continent/continent.service';
 import { S3Service } from '@core/s3/s3.service';
-import { CountryService } from '../country/country.service';
-import { UnsplashService } from '../utils/crawlSites/unsplash/unsplash.site.service';
-import { IScrapeContinents, IScrapeCountries, ICountries } from '../utils/crawlSites/worldPop/interfaces';
-import { SiteWorldPopService } from '../utils/crawlSites/worldPop/worldPop.site.service';
-import { ICountry, ICountryUpdatedFields } from '../country/interfaces';
-import { ContinentDocument } from '../continent/schemas/continent.schema';
+import { UnsplashService } from '@libs/crawler/sites/unsplash/unsplash.site.service';
+import { IScrapeContinents, IScrapeCountries, ICountries } from '@libs/crawler/sites/worldPop/interfaces';
+import { SiteWorldPopService } from '@libs/crawler/sites/worldPop/worldPop.site.service';
+import { CountryService } from '@module/country/country.service';
+import { ContinentService } from '@module/continent/continent.service';
+import { ICountry, ICountryUpdatedFields } from '@module/country/interfaces';
+import { ContinentDocument } from '@module/continent/schemas/continent.schema';
 
 @Injectable()
 export class CrawlerService {

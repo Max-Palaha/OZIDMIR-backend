@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Page } from 'puppeteer';
-import { CrawlerServiceUtils } from '../../crawler/crawler.utils.service';
+import { CrawlerService } from '../../crawler.service';
 
 @Injectable()
 export class UnsplashService {
@@ -9,7 +9,7 @@ export class UnsplashService {
 
   private readonly SEARCH_CLASS: string = '.gdt34';
   private readonly IMAGE_CLASS: string = '.YVj9w';
-  constructor(private crawlerServiceUtil: CrawlerServiceUtils) {}
+  constructor(private crawlerServiceUtil: CrawlerService) {}
 
   public async getImageByCountry(name: string): Promise<Buffer> {
     const page: Page = await this.crawlerServiceUtil.crawl(this.SITE_URL, this.IS_DISABLE_IMAGES);

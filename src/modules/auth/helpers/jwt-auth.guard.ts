@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Observable } from 'node_modules/rxjs/dist/types';
 import { Request } from 'express';
-import { AuthServiceUtils } from '../auth.utils.service';
+import { AuthUtilsService } from '@auth/utils/auth.utils.service';
 import { IUser } from 'src/modules/users/interfaces';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class JwtAuthGuard implements CanActivate {
   private readonly WRONG_AUTH: string = 'Wrong email or password';
   private readonly UNKNOWN_ERRROR: string = 'Unknown error';
 
-  constructor(private authServiceUtils: AuthServiceUtils) {}
+  constructor(private authServiceUtils: AuthUtilsService) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const req: Request & { user: IUser } = context.switchToHttp().getRequest();

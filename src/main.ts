@@ -2,9 +2,9 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder, OpenAPIObject } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ValidationPipe } from './helpers/validation.pipe';
+import { ValidationPipe } from '@common/helpers/validation.pipe';
 import * as cookieParser from 'cookie-parser';
-import { SocketAdapter } from './helpers/socket.adapter';
+import { SocketAdapter } from '@common/helpers/socket.adapter';
 
 async function bootstrap(): Promise<void> {
   const whitelist: string[] = ['https://127.0.0.1:4200', 'http://localhost:4200', undefined];

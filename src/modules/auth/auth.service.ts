@@ -1,16 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../users/dto/create.user.dto';
-import { UsersService } from '../users/users.service';
+import { CreateUserDto } from '@users/dto/create.user.dto';
+import { UsersService } from '@users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { MailService } from '@core/mail/mail.service';
 import { TokensService } from '../tokens/tokens.service';
-import { dumpUser } from '../users/dump';
-import { AuthServiceUtils } from '../utils/auth/auth.utils.service';
+import { dumpUser } from '@users/dump';
+import { AuthUtilsService } from '@auth/utils/auth.utils.service';
 import { IAuth, IToken } from './interfaces';
-import { UserDocument } from '../users/schemas/user.schema';
+import { UserDocument } from '@users/schemas/user.schema';
 import { TokenDocument } from '../tokens/schemas/token.schema';
-import { IUser } from '../users/interfaces';
+import { IUser } from '@users/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -28,14 +28,14 @@ export class AuthService {
     private userService: UsersService,
     private mailService: MailService,
     private tokensService: TokensService,
-    private authServiceUtils: AuthServiceUtils,
+    private authUtilsService: AuthUtilsService,
   ) {}
 
   async login(userDto: CreateUserDto): Promise<IAuth> {
     try {
-      await this.authServiceUtils.validateUser(userDto);
+      await this.authUtilsService.validateUser(userDto);
       const user: UserDocument = await this.userService.getUserByEmail(userDto.email);
-      const tokens: IToken = await this.authServiceUtils.generateTokens(user);
+      const tokens: IToken = await this.authUtilsService.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
         tokens,
@@ -61,7 +61,7 @@ export class AuthService {
         userDto.email,
         `${process.env.API_URL}/auth/activate/${activationLink}`,
       );
-      const tokens: IToken = await this.authServiceUtils.generateTokens(user);
+      const tokens: IToken = await this.authUtilsService.generateTokens(user);
       await this.tokensService.saveToken(user._id, tokens.refreshToken);
       return {
         tokens,
@@ -73,7 +73,11 @@ export class AuthService {
   }
 
   async activate(activationLink: string): Promise<void> {
-    await this.userService.updateUser({ activationLink }, { isActivated: true });
+    try {
+      await this.userService.updateUser({ activationLink }, { isActivated: true });
+    } catch (error: unknown) {
+      throw new HttpException(error, HttpStatus.UNAUTHORIZED);
+    }
   }
 
   async refresh(refreshToken: string): Promise<IAuth> {
@@ -81,7 +85,7 @@ export class AuthService {
       throw new HttpException(this.WRONG_REFRESH, HttpStatus.UNAUTHORIZED);
     }
 
-    const userData: IUser = this.authServiceUtils.validateRefreshToken(refreshToken);
+    const userData: IUser = this.authUtilsService.validateRefreshToken(refreshToken);
     const tokenFromDb: TokenDocument = await this.tokensService.findRefreshToken(refreshToken);
 
     if (!userData || !tokenFromDb) {
@@ -89,7 +93,7 @@ export class AuthService {
     }
 
     const user: UserDocument = await this.userService.getUserByEmail(userData.email);
-    const tokens: IToken = await this.authServiceUtils.generateTokens(user);
+    const tokens: IToken = await this.authUtilsService.generateTokens(user);
     await this.tokensService.saveToken(user._id, tokens.refreshToken);
     return {
       tokens,
@@ -97,7 +101,8 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: string): Promise<void> {
-    return this.tokensService.removeToken(refreshToken);
+  async logout(refreshToken: string): Promise<boolean> {
+    await this.tokensService.removeToken(refreshToken);
+    return true;
   }
 }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CrawlerUtilsModule } from '../../crawler/crawler.utils.module';
+import { CrawlerModule } from '@libs/crawler/crawler.module';
 import { UnsplashService } from './unsplash.site.service';
 
 @Module({
   providers: [UnsplashService],
   exports: [UnsplashService],
-  imports: [CrawlerUtilsModule],
+  imports: [CrawlerModule],
 })
 export class UnsplashModule {}

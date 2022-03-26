@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CrawlerUtilsModule } from '../../crawler/crawler.utils.module';
+import { CrawlerModule } from '@libs/crawler/crawler.module';
 import { SiteNumbeoService } from './numbeo.site.service';
 
 @Module({
   providers: [SiteNumbeoService],
   exports: [SiteNumbeoService],
-  imports: [CrawlerUtilsModule],
+  imports: [CrawlerModule],
 })
 export class SiteNumbeoModule {}

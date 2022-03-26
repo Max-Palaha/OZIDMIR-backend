@@ -1,7 +1,7 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-import { ValidationException } from '../exception/validation.exception';
+import { ValidationException } from '@common/exception/validation.exception';
 
 interface IErrorInfo {
   code: number;

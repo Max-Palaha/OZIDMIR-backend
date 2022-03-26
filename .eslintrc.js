@@ -44,6 +44,7 @@ module.exports = {
     "@typescript-eslint/restrict-plus-operands": "error",
     "@typescript-eslint/type-annotation-spacing": "error",
     "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/typedef": [
       "error",
       {
@@ -68,5 +69,6 @@ module.exports = {
       "error",
       "single"
     ],
+    "no-unused-vars": "off",
   },
 };

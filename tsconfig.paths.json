@@ -5,8 +5,8 @@
       "@events/*": [
         "src/events/*"
       ],
-      "@utils/*": [
-        "src/utils/*"
+      "@module/*": [
+        "src/modules/*"
       ],
       "@helpers/*": [
         "src/helpers/*"
@@ -14,8 +14,17 @@
       "@auth/*": [
         "src/modules/auth/*"
       ],
+      "@users/*": [
+        "src/modules/users/*"
+      ],
       "@core/*": [
         "src/modules/core/*"
+      ],
+      "@common/*": [
+        "src/common/*"
+      ],
+      "@libs/*": [
+        "src/libs/*"
       ]
     }
   }

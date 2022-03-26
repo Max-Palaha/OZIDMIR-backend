@@ -1,15 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../../users/dto/create.user.dto';
-import { UsersService } from '../../users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { UserDocument } from '../../users/schemas/user.schema';
-import { IToken } from '../../auth/interfaces';
-import { dumpUser } from '../../users/dump';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IUser } from 'src/modules/users/interfaces';
+import { UserDocument } from '@users/schemas/user.schema';
+import { UsersService } from '@users/users.service';
+import { CreateUserDto } from '@users/dto';
+import { IUser } from '@users/interfaces';
+import { dumpUser } from '@users/dump';
+import { IToken } from '@auth/interfaces';
 
 @Injectable()
-export class AuthServiceUtils {
+export class AuthUtilsService {
   // validateUser
   private readonly WRONG_AUTH: string = 'Wrong email or password';
 
